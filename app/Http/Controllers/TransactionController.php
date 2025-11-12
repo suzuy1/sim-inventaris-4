@@ -100,7 +100,54 @@ class TransactionController extends Controller
     {
         $this->authorize('view', $transaction); // Proteksi
         $transaction->load(['inventaris', 'user']);
-        return view('transactions.show', compact('transaction'));
+
+        $details = [
+            [
+                'label' => 'Inventaris',
+                'value' => $transaction->inventaris->nama_barang,
+                'subtext' => $transaction->inventaris->kode_inventaris . ' · ' . $transaction->inventaris->kategori,
+                'icon' => 'heroicon-o-cube',
+                'color' => 'purple'
+            ],
+            [
+                'label' => 'Jumlah',
+                'value' => $transaction->jumlah . ' unit',
+                'icon' => 'heroicon-o-archive-box',
+                'color' => 'blue'
+            ],
+            [
+                'label' => 'Tanggal',
+                'value' => \Carbon\Carbon::parse($transaction->tanggal)->isoFormat('dddd, D MMMM Y'),
+                'subtext' => \Carbon\Carbon::parse($transaction->tanggal)->diffForHumans(),
+                'icon' => 'heroicon-o-calendar',
+                'color' => 'green'
+            ],
+            [
+                'label' => 'Pengguna',
+                'value' => $transaction->user?->name ?? 'N/A',
+                'icon' => 'heroicon-o-user',
+                'color' => 'pink'
+            ],
+            [
+                'label' => 'Dibuat',
+                'value' => $transaction->created_at->diffForHumans(),
+                'subtext' => $transaction->created_at->format('d/m/Y H:i:s'),
+                'icon' => 'heroicon-o-clock',
+                'color' => 'gray'
+            ],
+            [
+                'label' => 'Diperbarui',
+                'value' => $transaction->updated_at->diffForHumans(),
+                'subtext' => $transaction->updated_at->format('d/m/Y H:i:s'),
+                'icon' => 'heroicon-o-refresh',
+                'color' => 'gray'
+            ],
+        ];
+
+        return view('transactions.show', [
+            'transaction' => $transaction,
+            'details' => $details
+        ]);
     }
 
     /**

@@ -58,13 +58,34 @@
         .float-animation {
             animation: float 3s ease-in-out infinite;
         }
+
+        /* Sidebar collapse transition */
+        .sidebar-collapsed {
+            width: 5rem !important;
+        }
+        .sidebar-expanded {
+            width: 18rem !important;
+        }
+        .main-content-expanded {
+            margin-left: 0 !important;
+        }
+        .main-content-collapsed {
+            margin-left: 5rem !important;
+        }
     </style>
 </head>
 <body class="font-sans antialiased">
     
-    <div x-data="{ sidebarOpen: window.innerWidth >= 1024, darkMode: false }" 
-         :class="{ 'dark': darkMode }" 
-         class="flex h-screen overflow-hidden transition-colors duration-300">
+    <div x-data="{ 
+        sidebarOpen: window.innerWidth >= 1024, 
+        darkMode: false,
+        sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
+    }" 
+         :class="{ 
+             'dark': darkMode,
+             'sidebar-collapsed': sidebarCollapsed 
+         }" 
+         class="flex h-screen overflow-hidden transition-all duration-300">
 
         {{-- Overlay untuk mobile --}}
         <div x-show="!sidebarOpen && window.innerWidth < 1024" 
@@ -78,36 +99,39 @@
              class="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm lg:hidden"></div>
 
         {{-- Sidebar --}}
-        <aside x-show="sidebarOpen" 
+        <aside x-show="sidebarOpen || window.innerWidth >= 1024" 
                x-transition:enter="transition ease-in-out duration-300 transform"
                x-transition:enter-start="-translate-x-full" 
                x-transition:enter-end="translate-x-0"
                x-transition:leave="transition ease-in-out duration-300 transform"
                x-transition:leave-start="translate-x-0" 
                x-transition:leave-end="-translate-x-full"
-               class="fixed lg:static inset-y-0 left-0 z-30 w-72 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-gray-300 flex flex-col shadow-2xl lg:shadow-xl border-r border-gray-700/50">
+               :class="sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'"
+               class="fixed lg:static inset-y-0 left-0 z-30 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-gray-300 flex flex-col shadow-2xl lg:shadow-xl border-r border-gray-700/50 transition-all duration-300">
             
             {{-- Logo Section --}}
-            <div class="flex items-center justify-between h-20 px-6 bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border-b border-gray-700/50 backdrop-blur-sm">
-                <div class="flex items-center space-x-3">
+            <div class="flex items-center justify-between h-20 px-4 lg:px-6 bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border-b border-gray-700/50 backdrop-blur-sm">
+                <div class="flex items-center space-x-3" :class="sidebarCollapsed ? 'justify-center w-full' : ''">
                     <div class="relative">
                         <img src="{{ asset('logo/ubbg.jpg') }}" alt="Logo Universitas" class="w-10 h-10 rounded-xl object-cover border-2 border-purple-400/30 shadow-lg float-animation">
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-gray-900 rounded-full"></div>
                     </div>
-                    <div>
+                    <div x-show="!sidebarCollapsed" class="transition-opacity duration-300">
                         <span class="text-lg font-bold text-white tracking-tight">Sistem Inventaris</span>
                         <p class="text-xs text-gray-400">Management System</p>
                     </div>
                 </div>
-                <button @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors">
+                
+                {{-- Close button for mobile --}}
+                <button x-show="!sidebarCollapsed" @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18-6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
 
             {{-- Navigation --}}
-            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto" :class="sidebarCollapsed ? 'px-2' : 'px-4'">
                 @php
                     $menuItems = [
                         ['route' => 'dashboard', 'label' => 'Dasbor', 'icon' => 'heroicon-o-home'],
@@ -132,13 +156,26 @@
 
                 @foreach($menuItems as $item)
                     @if(isset($item['children']))
-                        <x-sidebar-dropdown :label="$item['label']" :icon="$item['icon']" :active="request()->routeIs('inventaris.*')">
+                        <x-sidebar-dropdown :label="$item['label']" :icon="$item['icon']" :active="request()->routeIs('inventaris.*')" collapsed="false" x-bind:collapsed="sidebarCollapsed">
                             @foreach($item['children'] as $child)
+                                @php
+                                    $isChildActive = false;
+                                    $childParams = $child['params'] ?? [];
+
+                                    if (request()->routeIs($child['route'])) {
+                                        if (isset($childParams['kategori'])) {
+                                            $isChildActive = request()->query('kategori') === $childParams['kategori'];
+                                        } elseif (!request()->query('kategori')) {
+                                            $isChildActive = !request()->has('kategori');
+                                        }
+                                    }
+                                @endphp
                                 <x-sidebar-link 
                                     :route="$child['route']" 
-                                    :params="$child['params'] ?? []"
+                                    :params="$childParams"
                                     :label="$child['label']"
-                                    :active="request()->fullUrlIs(route($child['route'], $child['params'] ?? [], false) . '*')" />
+                                    :active="$isChildActive"
+                                    collapsed="false" x-bind:collapsed="sidebarCollapsed" />
                             @endforeach
                         </x-sidebar-dropdown>
                     @else
@@ -146,14 +183,29 @@
                             :route="$item['route']" 
                             :label="$item['label']"
                             :icon="$item['icon']"
-                            :active="request()->routeIs($item['route'] . '*')" />
+                            :active="request()->routeIs($item['route'] . '*')"
+                            collapsed="false" x-bind:collapsed="sidebarCollapsed" />
                     @endif
                 @endforeach
             </nav>
 
             {{-- Sidebar Footer --}}
-            <div class="p-4 border-t border-gray-700/50 bg-gray-800/30 backdrop-blur-sm">
-                <div class="flex items-center justify-between mb-3">
+            <div class="p-3 border-t border-gray-700/50 bg-gray-800/30 backdrop-blur-sm" :class="sidebarCollapsed ? 'px-2' : 'px-4'">
+                {{-- Collapse Button --}}
+                <button @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebarCollapsed', sidebarCollapsed)" 
+                        class="w-full flex items-center justify-center lg:justify-start gap-2 p-2.5 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-all duration-200 group mb-3"
+                        :title="sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-300" 
+                         :class="{ 'rotate-180': sidebarCollapsed }" 
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                    </svg>
+                    <span x-show="!sidebarCollapsed" class="text-xs font-medium text-gray-400 transition-opacity duration-300">
+                        Collapse Sidebar
+                    </span>
+                </button>
+
+                <div class="flex items-center justify-between mb-3" x-show="!sidebarCollapsed">
                     <span class="text-xs font-medium text-gray-400">Mode Tampilan</span>
                     <button @click="darkMode = !darkMode" 
                             class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
@@ -176,29 +228,48 @@
                         </span>
                     </button>
                 </div>
-                <div class="text-xs text-gray-500 text-center">
+                <div class="text-xs text-gray-500 text-center" x-show="!sidebarCollapsed">
                     &copy; {{ date('Y') }} Sistem Inventaris v1.0
                 </div>
             </div>
         </aside>
 
         {{-- Main Content --}}
-        <div class="flex flex-1 flex-col overflow-hidden w-full">
+        <div class="flex flex-1 flex-col overflow-hidden w-full transition-all duration-300"
+             :class="sidebarCollapsed ? 'lg:ml-20' : ''">
             
             {{-- Top Navigation --}}
             <header class="sticky top-0 z-10 glass border-b border-gray-200/50 px-4 sm:px-6 py-3 shadow-sm">
                 <div class="flex items-center justify-between">
                     
-                    {{-- Mobile menu toggle --}}
-                    <button @click="sidebarOpen = !sidebarOpen" 
-                            class="lg:hidden inline-flex items-center justify-center p-2.5 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
-                        <svg x-show="!sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                        <svg x-show="sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    {{-- Left Section: Menu Toggle and Expand Button --}}
+                    <div class="flex items-center gap-3">
+                        {{-- Mobile menu toggle --}}
+                        <button @click="sidebarOpen = !sidebarOpen" 
+                                class="lg:hidden inline-flex items-center justify-center p-2.5 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
+                            <svg x-show="!sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                            <svg x-show="sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+
+                        {{-- Expand sidebar button for desktop when collapsed --}}
+                        <button x-show="sidebarCollapsed && window.innerWidth >= 1024" 
+                                @click="sidebarCollapsed = false; localStorage.setItem('sidebarCollapsed', false)"
+                                class="hidden lg:flex items-center justify-center p-2.5 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200"
+                                title="Expand Sidebar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+
+                        {{-- Breadcrumb or page title can go here --}}
+                        <div class="hidden md:block">
+                            <h1 class="text-lg font-semibold text-gray-900">@yield('title', 'Dasbor')</h1>
+                        </div>
+                    </div>
 
                     {{-- Search Bar --}}
                     <div class="flex-1 max-w-2xl mx-4 lg:mx-8">
@@ -234,9 +305,11 @@
                             <button @click="open = !open" 
                                     class="relative p-2.5 text-gray-600 hover:text-purple-600 hover:bg-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 0 0-6 6v2.25l-2.47 2.47a.75.75 0 0 0 .53 1.28h15.88a.75.75 0 0 0 .53-1.28L16.5 12V9.75a6 6 0 0 0-6-6z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 0 0-6 6v2.25l-2.47 2.47a.75.75 0 0 0 .53 1.28h15.88a.75.75 0 0 0 .53-1.28L16.5 12V9.75a6 6 0 00-6-6z"/>
                                 </svg>
-                                <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                                @if(isset($pendingRequests) && $pendingRequests > 0)
+                                    <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                                @endif
                             </button>
                             
                             <div x-show="open" x-transition 

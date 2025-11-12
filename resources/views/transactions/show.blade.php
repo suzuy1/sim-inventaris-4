@@ -104,51 +104,6 @@
         <div class="p-6">
             {{-- REVISI 2: Ditambahkan `lg:grid-cols-3` agar di layar lebar menjadi 3 kolom --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @php
-                    $details = [
-                        [
-                            'label' => 'Inventaris', 
-                            'value' => $transaction->inventaris->nama_barang, 
-                            'subtext' => $transaction->inventaris->kode_inventaris . ' · ' . $transaction->inventaris->kategori,
-                            'icon' => 'heroicon-o-cube',
-                            'color' => 'purple'
-                        ],
-                        [
-                            'label' => 'Jumlah', 
-                            'value' => $transaction->jumlah . ' unit', 
-                            'icon' => 'heroicon-o-archive-box',
-                            'color' => 'blue'
-                        ],
-                        [
-                            'label' => 'Tanggal', 
-                            'value' => \Carbon\Carbon::parse($transaction->tanggal)->isoFormat('dddd, D MMMM Y'), 
-                            'subtext' => \Carbon\Carbon::parse($transaction->tanggal)->diffForHumans(),
-                            'icon' => 'heroicon-o-calendar',
-                            'color' => 'green'
-                        ],
-                        [
-                            'label' => 'Pengguna', 
-                            'value' => $transaction->user?->name ?? 'N/A', 
-                            'icon' => 'heroicon-o-user',
-                            'color' => 'pink'
-                        ],
-                        [
-                            'label' => 'Dibuat', 
-                            'value' => $transaction->created_at->diffForHumans(), 
-                            'subtext' => $transaction->created_at->format('d/m/Y H:i:s'),
-                            'icon' => 'heroicon-o-clock',
-                            'color' => 'gray'
-                        ],
-                        [
-                            'label' => 'Diperbarui', 
-                            'value' => $transaction->updated_at->diffForHumans(), 
-                            'subtext' => $transaction->updated_at->format('d/m/Y H:i:s'),
-                            'icon' => 'heroicon-o-refresh',
-                            'color' => 'gray'
-                        ],
-                    ];
-                @endphp
-
                 @foreach($details as $detail)
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-purple-300 transition-colors duration-200">
                         <div class="flex items-start space-x-3">

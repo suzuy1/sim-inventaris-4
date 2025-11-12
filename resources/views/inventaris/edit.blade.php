@@ -1,7 +1,8 @@
 @extends('dashboard')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+{{-- REVISI 1: Diubah dari max-w-4xl menjadi max-w-7xl --}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header Section -->
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -114,9 +115,11 @@
                         Informasi Dasar
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- REVISI 2: Grid diubah menjadi 4 kolom di layar large (lg:grid-cols-4) --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Nama Barang -->
-                        <div class="md:col-span-2">
+                        {{-- REVISI 3: Nama Barang dibuat full width di semua ukuran (lg:col-span-4) --}}
+                        <div class="md:col-span-2 lg:col-span-4">
                             <label for="nama_barang" class="block text-sm font-medium text-gray-700 mb-2">
                                 Nama Barang <span class="text-red-500">*</span>
                             </label>
@@ -312,6 +315,9 @@
     </div>
 </div>
 
+{{-- REVISI 4: Menghapus script Alpine.js yang duplikat. 
+     Logika x-data sudah didefinisikan di tag <form> di atas. --}}
+{{-- 
 <script>
 // Alpine.js for interactive features
 document.addEventListener('alpine:init', () => {
@@ -328,4 +334,5 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
+--}}
 @endsection

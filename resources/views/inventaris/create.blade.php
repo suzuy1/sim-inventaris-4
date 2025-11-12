@@ -1,7 +1,8 @@
 @extends('dashboard')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+{{-- REVISI 1: Diubah dari max-w-4xl menjadi max-w-7xl --}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="mb-4 md:mb-0">
@@ -16,13 +17,9 @@
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">Tambah Inventaris Baru</h1>
                 <p class="text-gray-600">Tambahkan barang baru ke dalam sistem inventaris kampus</p>
             </div>
+            {{-- REVISI 2: Dihapus tombol "Batal" di header, karena sudah ada di bawah form --}}
             <div class="flex gap-3">
-                <a href="{{ route('inventaris.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 transition-colors duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Batal
-                </a>
+                {{-- Tombol Batal dipindah ke bawah form untuk konsistensi --}}
             </div>
         </div>
     </div>
@@ -86,8 +83,10 @@
                         Informasi Dasar Barang
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
+                    {{-- REVISI 3: Grid diubah menjadi 4 kolom di layar large (lg:grid-cols-4) --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {{-- REVISI 4: Nama Barang dibuat full width di semua ukuran (lg:col-span-4) --}}
+                        <div class="md:col-span-2 lg:col-span-4">
                             <label for="nama_barang" class="block text-sm font-medium text-gray-700 mb-2">
                                 Nama Barang <span class="text-red-500">*</span>
                             </label>

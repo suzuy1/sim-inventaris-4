@@ -1,7 +1,8 @@
 @extends('dashboard')
 
 @section('content')
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+{{-- REVISI: Diubah dari max-w-4xl menjadi max-w-7xl --}}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
     <div class="mb-10 text-center">
         <h1 class="text-4xl font-bold text-gray-900 mb-3">Create New User</h1>

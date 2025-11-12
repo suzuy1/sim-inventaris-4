@@ -32,6 +32,7 @@ class Inventaris extends Model
         'kondisi_baik',
         'kondisi_rusak_ringan',
         'kondisi_rusak_berat',
+        'unit_id', // Add unit_id to fillable
     ];
 
     // Relationships
@@ -46,10 +47,10 @@ class Inventaris extends Model
     //     return $this->belongsTo(Room::class);
     // }
 
-    // public function unit()
-    // {
-    //     return $this->belongsTo(Unit::class);
-    // }
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
 
     public function transactions()
     {

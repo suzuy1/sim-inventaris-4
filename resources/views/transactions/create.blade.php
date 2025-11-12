@@ -224,42 +224,4 @@
     </div>
 </div>
 
-{{-- SCRIPT ANDA DI SINI (Tidak perlu diubah) --}}
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('stockChecker', (inventaris) => ({
-        selectedInventarisId: '',
-        currentStock: 0,
-        itemType: '',
-        selectedItemName: '',
-        
-        init() {
-            // Set initial values if there's old input
-            this.selectedInventarisId = '{{ old('inventaris_id') }}';
-            if (this.selectedInventarisId) {
-                this.updateStockInfo();
-            }
-        },
-        
-        updateStockInfo() {
-            const selectedItem = inventaris.find(item => item.id == this.selectedInventarisId);
-            if (selectedItem) {
-                this.selectedItemName = selectedItem.nama_barang;
-                this.itemType = selectedItem.jenis_barang;
-                
-                // Determine which stock field to show based on item type
-                if (this.itemType === 'habis_pakai') {
-                    this.currentStock = selectedItem.stok || 0;
-                } else {
-                    this.currentStock = selectedItem.jumlah_baik || 0;
-                }
-            } else {
-                this.currentStock = 0;
-                this.itemType = '';
-                this.selectedItemName = '';
-            }
-        }
-    }));
-});
-</script>
 @endsection

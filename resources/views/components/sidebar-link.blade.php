@@ -1,4 +1,4 @@
-@props(['route', 'label', 'icon' => null, 'params' => [], 'active' => false])
+@props(['route', 'label', 'icon' => null, 'params' => [], 'active' => false, 'collapsed' => false])
 
 @php
     $isActive = $active ?? request()->routeIs($route . '*');
