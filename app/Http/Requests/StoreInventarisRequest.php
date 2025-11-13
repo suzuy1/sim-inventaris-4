@@ -29,9 +29,9 @@ class StoreInventarisRequest extends FormRequest
             'kategori' => 'required|string|in:tidak_habis_pakai,habis_pakai,aset_tetap',
             'lokasi' => 'nullable|string|max:255', // Tambahkan validasi untuk lokasi
             'kode_inventaris' => 'nullable|string|max:255|unique:inventaris,kode_inventaris', // Tambahkan validasi untuk kode_inventaris
-            'kondisi_baik' => 'required|integer|min:0',
-            'kondisi_rusak_ringan' => 'required|integer|min:0',
-            'kondisi_rusak_berat' => 'required|integer|min:0',
+            'kondisi_baik' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
+            'kondisi_rusak_ringan' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
+            'kondisi_rusak_berat' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
             'initial_stok' => 'nullable|integer|min:0|required_if:kategori,habis_pakai',
         ];
     }

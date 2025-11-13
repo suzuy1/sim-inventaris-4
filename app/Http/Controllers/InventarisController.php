@@ -3,216 +3,424 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Inventaris; // Changed from Item
+use App\Models\Inventaris; // Model master
+use App\Models\AsetDetail; // Model detail unit (BARU)
 use App\Models\Room;
-use App\Models\Unit;
-use App\Models\StokHabisPakai; // New import
+use App\Models\User; // (BARU) Untuk penanggung jawab
+use App\Models\StokHabisPakai;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InventarisExport;
 use App\Imports\InventarisImport;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // Opsional, untuk debugging
-use App\Http\Requests\StoreInventarisRequest; // Tambahkan ini di atas
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Tambahkan ini
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreInventarisRequest; // Ini mungkin perlu direvisi nanti
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rule;
 
-class InventarisController extends Controller // Changed class name
+class InventarisController extends Controller
 {
-    use AuthorizesRequests; // Tambahkan trait ini
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
+     * LOGIKA DIUBAH TOTAL: Menampilkan master inventaris + count kondisi dari aset_details
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Inventaris::class); // Otorisasi viewAny
-        // Logika untuk mengelompokkan inventaris berdasarkan nama_barang
-        $query = Inventaris::select(
-            'nama_barang',
-            DB::raw('MAX(lokasi) as lokasi'), // Tambahkan lokasi ke query
-            DB::raw('MAX(kode_inventaris) as kode_inventaris'), // Tambahkan kode_inventaris ke query
-            DB::raw('SUM(kondisi_baik) as total_baik'),
-            DB::raw('SUM(kondisi_rusak_ringan) as total_rusak_ringan'),
-            DB::raw('SUM(kondisi_rusak_berat) as total_rusak_berat'),
-        )->groupBy('nama_barang');
+        $this->authorize('viewAny', Inventaris::class);
+
+        $query = Inventaris::query()
+            ->where('kategori', '!=', 'habis_pakai') // Fokus pada barang tidak habis pakai/aset
+            ->withCount([
+                'asetDetails', // Menghitung total unit
+                'asetDetails as total_baik' => function ($q) {
+                    $q->where('kondisi', 'Baik');
+                },
+                'asetDetails as total_rusak_ringan' => function ($q) {
+                    $q->where('kondisi', 'Rusak Ringan');
+                },
+                'asetDetails as total_rusak_berat' => function ($q) {
+                    $q->where('kondisi', 'Rusak Berat');
+                },
+            ]);
 
         if ($request->has('search')) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
+        // Ambil data (termasuk yang tidak punya detail aset, misal baru dibuat)
         $inventaris = $query->paginate(10);
 
+        // Untuk kartu statistik di atas (ini juga bisa disederhanakan)
+        // $totalStats = [
+        //     'total_baik' => $inventaris->sum('total_baik'),
+        //     'total_rusak_ringan' => $inventaris->sum('total_rusak_ringan'),
+        //     'total_rusak_berat' => $inventaris->sum('total_rusak_berat'),
+        //     'total_jenis' => $inventaris->total()
+        // ];
+        // return view('inventaris.index', compact('inventaris', 'totalStats'));
+
+        // Biarkan view lama menghitung SUM-nya sendiri
         return view('inventaris.index', compact('inventaris'));
     }
 
     /**
      * Show the form for creating a new resource.
+     * FUNGSI BERUBAH: Menampilkan form untuk membuat MASTER BARANG baru
      */
     public function create()
     {
-        $this->authorize('create', Inventaris::class); // Otorisasi create
-        
+        $this->authorize('create', Inventaris::class);
+        // View ini ('inventaris.create') perlu kita revisi nanti
         return view('inventaris.create');
     }
 
     /**
      * Store a newly created resource in storage.
+     * LOGIKA DIUBAH: Hanya menyimpan data master (nama & kategori)
      */
-    public function store(StoreInventarisRequest $request) // Ganti tipe parameter
+    public function store(StoreInventarisRequest $request) // Validasi mungkin perlu disesuaikan
     {
-        $this->authorize('create', Inventaris::class); // Otorisasi create (double check, bagus)
-        // 1. Validasi sudah otomatis dilakukan oleh Form Request
-        $validatedData = $request->validated(); // Ambil data yang sudah divalidasi
+        $this->authorize('create', Inventaris::class);
+        $validatedData = $request->validated(); // Asumsi validasi minimal 'nama_barang' & 'kategori'
 
-        // 2. Mulai Transaksi Database
         DB::beginTransaction();
-
         try {
-            // 3. Buat entri Inventaris baru
+            // 1. Buat master inventaris
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
-                'kategori' => $validatedData['kategori'],
-                'lokasi' => $validatedData['lokasi'] ?? null, // Tambahkan lokasi
-                'kode_inventaris' => $validatedData['kode_inventaris'] ?? null, // Tambahkan kode_inventaris
-                'kondisi_baik' => $validatedData['kondisi_baik'],
-                'kondisi_rusak_ringan' => $validatedData['kondisi_rusak_ringan'],
-                'kondisi_rusak_berat' => $validatedData['kondisi_rusak_berat'],
+                'kategori' => $validatedData['kategori'], // misal: 'tidak_habis_pakai'
             ]);
 
-            // 4. Jika barang habis pakai, buat entri stok
+            // 2. Logika untuk barang habis pakai
             if ($validatedData['kategori'] === 'habis_pakai' && isset($validatedData['initial_stok'])) {
                 StokHabisPakai::create([
-                    // Pastikan foreign key sesuai (inventaris_id atau id_inventaris)
                     'inventaris_id' => $inventaris->id,
                     'jumlah_masuk' => $validatedData['initial_stok'],
-                    'jumlah_keluar' => 0, // Awalnya keluar 0
-                    'tanggal' => now()->toDateString(), // Tanggal stok awal
+                    'jumlah_keluar' => 0,
+                    'tanggal' => now()->toDateString(),
                 ]);
+            } 
+            // 3. Logika untuk barang tidak habis pakai / aset tetap (membuat aset_detail awal)
+            else if (in_array($validatedData['kategori'], ['tidak_habis_pakai', 'aset_tetap'])) {
+                $kondisiBaik = $validatedData['kondisi_baik'] ?? 0;
+                $kondisiRusakRingan = $validatedData['kondisi_rusak_ringan'] ?? 0;
+                $kondisiRusakBerat = $validatedData['kondisi_rusak_berat'] ?? 0;
+
+                // Buat AsetDetail untuk kondisi Baik
+                for ($i = 0; $i < $kondisiBaik; $i++) {
+                    AsetDetail::create([
+                        'inventaris_id' => $inventaris->id,
+                        'kondisi' => 'Baik',
+                        'kode_inv' => $inventaris->id . '-B-' . ($i + 1), // Contoh kode inventaris
+                        // Field lain bisa diisi default atau null
+                    ]);
+                }
+
+                // Buat AsetDetail untuk kondisi Rusak Ringan
+                for ($i = 0; $i < $kondisiRusakRingan; $i++) {
+                    AsetDetail::create([
+                        'inventaris_id' => $inventaris->id,
+                        'kondisi' => 'Rusak Ringan',
+                        'kode_inv' => $inventaris->id . '-RR-' . ($i + 1), // Contoh kode inventaris
+                    ]);
+                }
+
+                // Buat AsetDetail untuk kondisi Rusak Berat
+                for ($i = 0; $i < $kondisiRusakBerat; $i++) {
+                    AsetDetail::create([
+                        'inventaris_id' => $inventaris->id,
+                        'kondisi' => 'Rusak Berat',
+                        'kode_inv' => $inventaris->id . '-RB-' . ($i + 1), // Contoh kode inventaris
+                    ]);
+                }
             }
 
-            // 5. Commit transaksi
             DB::commit();
 
-            // 6. Redirect ke halaman index dengan pesan sukses
-            return redirect()->route('inventaris.index')->with('success', 'Data inventaris berhasil ditambahkan.');
+            // Redirect ke halaman detail (showGrouped) untuk master barang yg baru dibuat
+            return redirect()->route('inventaris.show_grouped', $inventaris)
+                             ->with('success', 'Master barang berhasil ditambahkan. Silakan tambahkan unit aset.');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-             // Jika validasi gagal (seharusnya sudah ditangani Form Request, tapi sebagai backup)
-             DB::rollBack();
-             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            // 7. Jika terjadi error lain, rollback transaksi
             DB::rollBack();
-            Log::error('Gagal menyimpan inventaris baru: ' . $e->getMessage());
-
-            // Beri pesan error yang lebih spesifik jika memungkinkan
-            $errorMessage = 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage();
-            // Redirect kembali ke form dengan pesan error
-            return redirect()->back()->withInput()->with('error', $errorMessage);
+            Log::error('Gagal menyimpan master inventaris: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
     /**
      * Display the specified resource.
+     * FUNGSI BERUBAH: Redirect ke halaman showGrouped
      */
-    public function show(Inventaris $inventaris) // Ganti $inventari jadi $inventaris
+    public function show(Inventaris $inventaris)
     {
-        $this->authorize('view', $inventaris); // Otorisasi view spesifik
-        // Lokasi dan kode_inventaris sudah ada di model, tidak perlu load relasi
-        return view('inventaris.show', compact('inventaris'));
+        $this->authorize('view', $inventaris);
+        // Langsung arahkan ke halaman detail unit
+        return redirect()->route('inventaris.show_grouped', $inventaris);
     }
 
     /**
      * Show the form for editing the specified resource.
+     * FUNGSI: Edit data MASTER BARANG
      */
-    public function edit(Inventaris $inventaris) // Ganti $inventari jadi $inventaris
+    public function edit(Inventaris $inventaris)
     {
-        $this->authorize('update', $inventaris); // Otorisasi update
-        // Lokasi dan kode_inventaris sudah ada di model
+        $this->authorize('update', $inventaris);
+        // View ini ('inventaris.edit') perlu kita revisi nanti
         return view('inventaris.edit', compact('inventaris'));
     }
 
     /**
      * Update the specified resource in storage.
+     * FUNGSI: Update data MASTER BARANG
      */
-    public function update(Request $request, Inventaris $inventaris) // Ganti $inventari jadi $inventaris
+    public function update(Request $request, Inventaris $inventaris)
     {
-        $this->authorize('update', $inventaris); // Otorisasi update
-        // Lakukan validasi seperti di store atau gunakan UpdateInventarisRequest
-        $validatedData = $request->validate([ /* ... rules ... */ ]);
+        $this->authorize('update', $inventaris);
+        // Validasi simpel
+        $validatedData = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'kategori' => 'required|string|in:habis_pakai,tidak_habis_pakai,aset_tetap',
+        ]);
+
         $inventaris->update($validatedData);
-        // ... (handle stok jika kategori berubah atau jumlah berubah)
-        return redirect()->route('inventaris.index')->with('success', 'Inventaris updated successfully.');
+
+        // ... (handle jika kategori berubah dari/ke habis_pakai)
+        
+        return redirect()->route('inventaris.index')->with('success', 'Master barang berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
+     * FUNGSI: Hapus MASTER BARANG (dan semua unitnya via cascade)
      */
-    public function destroy(Inventaris $inventaris) // Ganti $inventari jadi $inventaris
+    public function destroy(Inventaris $inventaris)
     {
-        $this->authorize('delete', $inventaris); // Otorisasi delete
-        // ... (logika hapus stok jika perlu)
+        $this->authorize('delete', $inventaris);
+        
+        // Logika hapus stok/aset detail
+        // Jika 'habis_pakai', hapus stok
+        if ($inventaris->kategori === 'habis_pakai') {
+            $inventaris->stokHabisPakai()->delete();
+        }
+        // Jika 'tidak_habis_pakai', aset_details akan terhapus otomatis
+        // berkat onDelete('cascade') di migrasi
+        
         $inventaris->delete();
-        return redirect()->route('inventaris.index')->with('success', 'Inventaris deleted successfully.');
+        
+        return redirect()->route('inventaris.index')->with('success', 'Master barang (dan semua unitnya) berhasil dihapus.');
     }
+
+    // ====================================================================
+    // METODE BARU UNTUK ASET DETAIL (UNIT)
+    // ====================================================================
+
+    /**
+     * FUNGSI UTAMA: Menampilkan halaman detail (daftar unit/aset)
+     * Ini menggantikan `showGrouped` lama.
+     */
+    public function showGrouped(Inventaris $inventaris)
+    {
+         $this->authorize('view', $inventaris);
+         
+         // Load semua unit/aset detail milik master barang ini
+         $inventarisDetails = AsetDetail::where('inventaris_id', $inventaris->id)
+             ->with(['room', 'penanggungJawab']) // Eager load relasi
+             ->paginate(10);
+         
+         // $namaBarang = $inventaris->nama_barang; (Kita ganti jadi passing objek utuh)
+         
+         // View ini ('inventaris.show_grouped') perlu kita ROMBAK TOTAL nanti
+         return view('inventaris.show_grouped', compact('inventaris', 'inventarisDetails'));
+    }
+
+    /**
+     * [BARU] Menampilkan form untuk menambah unit aset baru (Permintaan Dosen)
+     */
+    public function createAsetDetail(Inventaris $inventaris)
+    {
+        $this->authorize('create', Inventaris::class); // Asumsi policy sama
+
+        // Ambil data untuk dropdown
+        $rooms = Room::all();
+        $users = User::all(); // Nanti bisa difilter misal hanya role tertentu
+        
+        // View ini ('inventaris.detail.create') perlu kita BUAT BARU nanti
+        return view('inventaris.detail.create', compact('inventaris', 'rooms', 'users'));
+    }
+
+    /**
+     * [BARU] Menyimpan unit aset baru ke database (Permintaan Dosen)
+     */
+    public function storeAsetDetail(Request $request, Inventaris $inventaris)
+    {
+        $this->authorize('create', Inventaris::class);
+
+        // Validasi untuk form detail aset
+        $validatedData = $request->validate([
+            'kode_inv' => 'required|string|max:255|unique:aset_details,kode_inv',
+            'tgl_pembelian' => 'nullable|date',
+            'harga_beli' => 'nullable|numeric|min:0',
+            'sumber_dana' => 'nullable|string|max:255',
+            'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
+            'room_id' => 'nullable|exists:rooms,id',
+            'penanggung_jawab_id' => 'nullable|exists:users,id',
+            'keterangan' => 'nullable|string',
+            'tgl_perbaikan' => 'nullable|date',
+            'tgl_pengecekan' => 'nullable|date',
+        ]);
+
+        try {
+            // Tambahkan inventaris_id dan simpan
+            $dataToCreate = $validatedData;
+            $dataToCreate['inventaris_id'] = $inventaris->id;
+            
+            AsetDetail::create($dataToCreate);
+
+            // Redirect kembali ke halaman daftar unit
+            return redirect()->route('inventaris.show_grouped', $inventaris)
+                             ->with('success', 'Unit aset baru ('.$validatedData['kode_inv'].') berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            Log::error('Gagal menyimpan unit aset: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [BARU] Menampilkan form untuk MENGEDIT unit aset yang sudah ada.
+     */
+    public function editAsetDetail(AsetDetail $asetDetail)
+    {
+        // $asetDetail sudah otomatis di-load oleh Laravel
+        $this->authorize('update', $asetDetail->inventaris); // Asumsi policy-nya menempel di master
+
+        // Ambil data untuk dropdown
+        $rooms = Room::all();
+        $users = User::all();
+
+        // Load view 'edit.blade.php' yang akan kita buat
+        return view('inventaris.detail.edit', compact('asetDetail', 'rooms', 'users'));
+    }
+
+    /**
+     * [BARU] Menyimpan perubahan dari form edit unit aset.
+     */
+    public function updateAsetDetail(Request $request, AsetDetail $asetDetail)
+    {
+        $this->authorize('update', $asetDetail->inventaris);
+
+        // Validasi data (mirip store, tapi rule 'unique' diubah)
+        $validatedData = $request->validate([
+            'kode_inv' => [
+                'required',
+                'string',
+                'max:255',
+                // Pastikan kode_inv unik, TAPI hiraukan (ignore) ID milik kita sendiri
+                Rule::unique('aset_details')->ignore($asetDetail->id),
+            ],
+            'tgl_pembelian' => 'nullable|date',
+            'harga_beli' => 'nullable|numeric|min:0',
+            'sumber_dana' => 'nullable|string|max:255',
+            'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
+            'room_id' => 'nullable|exists:rooms,id',
+            'penanggung_jawab_id' => 'nullable|exists:users,id',
+            'keterangan' => 'nullable|string',
+            'tgl_perbaikan' => 'nullable|date',
+            'tgl_pengecekan' => 'nullable|date',
+        ]);
+
+        try {
+            // Update data di database
+            $asetDetail->update($validatedData);
+
+            // Redirect kembali ke halaman daftar unit (show_grouped)
+            // Kita ambil masternya dari relasi
+            return redirect()->route('inventaris.show_grouped', $asetDetail->inventaris)
+                             ->with('success', 'Unit aset ('.$asetDetail->kode_inv.') berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            Log::error('Gagal update unit aset: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [BARU] Menghapus unit aset dari database.
+     */
+    public function destroyAsetDetail(AsetDetail $asetDetail)
+    {
+        // $asetDetail sudah otomatis di-load
+        $this->authorize('delete', $asetDetail->inventaris); // Asumsi policy di master inventaris
+
+        try {
+            // Simpan nama master dan kode unit untuk pesan sukses
+            $namaMaster = $asetDetail->inventaris->nama_barang;
+            $kodeInv = $asetDetail->kode_inv;
+            $inventarisMaster = $asetDetail->inventaris;
+
+            // Hapus data dari database
+            $asetDetail->delete();
+
+            // Redirect kembali ke halaman daftar unit (show_grouped)
+            return redirect()->route('inventaris.show_grouped', $inventarisMaster)
+                             ->with('success', 'Unit aset ('.$kodeInv.') berhasil dihapus dari '.$namaMaster.'.');
+
+        } catch (\Exception $e) {
+            Log::error('Gagal hapus unit aset: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
+        }
+    }
+
+
+    // --- Method Bawaan (Perlu Penyesuaian Nanti) ---
 
     public function export()
     {
-        $this->authorize('export', Inventaris::class); // Otorisasi export
-        return Excel::download(new InventarisExport, 'inventaris.xlsx');
+        // $this->authorize('export', Inventaris::class);
+        // LOGIKA EXPORT PERLU DIUBAH (mau export master atau detail?)
+        // return Excel::download(new InventarisExport, 'inventaris.xlsx');
+        return redirect()->route('inventaris.index')->with('info', 'Fitur export perlu disesuaikan.');
     }
 
     public function import(Request $request)
     {
-        $this->authorize('import', Inventaris::class); // Otorisasi import
-        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
-        Excel::import(new InventarisImport, $request->file('file'));
-        return redirect()->route('inventaris.index')->with('success', 'Data inventaris berhasil diimpor.');
+        // $this->authorize('import', Inventaris::class);
+        // LOGIKA IMPORT PERLU DIUBAH (mau import master atau detail?)
+        // $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+        // Excel::import(new InventarisImport, $request->file('file'));
+        return redirect()->route('inventaris.index')->with('info', 'Fitur import perlu disesuaikan.');
     }
 
     public function printAll()
     {
-        $this->authorize('print', Inventaris::class); // Otorisasi print
-        $inventaris = Inventaris::all(); // Lokasi dan kode_inventaris sudah ada di model
-         // Tambah eager load stok untuk habis pakai
-         $inventaris->load(['stokHabisPakai' => function ($query) {
-             $query->select('inventaris_id', DB::raw('SUM(jumlah_masuk) as total_masuk, SUM(jumlah_keluar) as total_keluar'))
-                   ->groupBy('inventaris_id');
-         }]);
-        return view('inventaris.print_all', compact('inventaris'));
+        // $this->authorize('print', Inventaris::class);
+        // LOGIKA PRINT PERLU DIUBAH
+        // $inventaris = Inventaris::all();
+        // return view('inventaris.print_all', compact('inventaris'));
+        return redirect()->route('inventaris.index')->with('info', 'Fitur print perlu disesuaikan.');
     }
 
     public function printSingle($id)
     {
-        $inventaris = Inventaris::with(['stokHabisPakai'])->findOrFail($id); // Lokasi dan kode_inventaris sudah ada di model
-        $this->authorize('print', $inventaris); // Otorisasi print
-        return view('inventaris.print_single', compact('inventaris'));
+        // LOGIKA PRINT PERLU DIUBAH (print master atau detail?)
+        // $inventaris = Inventaris::with(['stokHabisPakai'])->findOrFail($id);
+        // $this->authorize('print', $inventaris);
+        // return view('inventaris.print_single', compact('inventaris'));
+        return redirect()->route('inventaris.index')->with('info', 'Fitur print perlu disesuaikan.');
     }
-
-    /**
-     * Get current stock for a specific inventaris item (especially for 'habis_pakai').
-     *
-     * @param  \App\Models\Inventaris $inventaris
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function getStock(Inventaris $inventaris)
     {
         if ($inventaris->kategori === 'habis_pakai') {
-            $sisaStok = StokHabisPakai::where('inventaris_id', $inventaris->id) // Sesuaikan dengan nama kolom foreign key yang benar
+            $sisaStok = StokHabisPakai::where('inventaris_id', $inventaris->id)
                                     ->sum(DB::raw('jumlah_masuk - jumlah_keluar'));
             return response()->json(['sisa_stok' => $sisaStok]);
         } else {
-            // Untuk barang tidak habis pakai, stok tidak dikelola per kuantitas di tabel stok
-            // Anda bisa mengembalikan jumlah kondisi baik, atau 0, atau pesan 'N/A'
-            return response()->json(['sisa_stok' => $inventaris->kondisi_baik]); // Contoh: mengembalikan jumlah kondisi baik
-            // Atau: return response()->json(['sisa_stok' => 'Tidak Berlaku']);
+            // Untuk barang tidak habis pakai, stok adalah jumlah unit dengan kondisi 'Baik'
+            $sisaStok = $inventaris->asetDetails()->where('kondisi', 'Baik')->count();
+            return response()->json(['sisa_stok' => $sisaStok]);
         }
-    }
-
-    public function showGrouped($nama_barang)
-    {
-         $this->authorize('viewAny', Inventaris::class); // Asumsi sama dengan viewAny
-         $inventarisDetails = Inventaris::where('nama_barang', $nama_barang)
-             ->paginate(10);
-         $namaBarang = $nama_barang;
-         return view('inventaris.show_grouped', compact('inventarisDetails', 'namaBarang'));
     }
 }

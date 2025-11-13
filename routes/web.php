@@ -20,13 +20,28 @@ Route::middleware("auth")->group(function () {
     Route::get("/dashboard",[DashboardController::class,"index"])->name("dashboard");
     Route::post("/logout",[LoginController::class,"logout"])->name("logout");
 
-    // Inventaris (PASTIKAN SEMUA INI ADA)
+    // Inventaris (Struktur Rute BARU)
     Route::get("/inventaris/print_all",[InventarisController::class,"printAll"])->name("inventaris.print_all");
-    Route::get("/inventaris/print_single/{id}",[InventarisController::class,"printSingle"])->name("inventaris.print_single");
+    Route::get("/inventaris/print_single/{id}",[InventarisController::class,"printSingle"])->name("inventaris.print_single"); // Ini mungkin perlu diubah ke {asetDetail}
     Route::post("inventaris/import",[InventarisController::class,"import"])->name("inventaris.import");
     Route::get("inventaris/export",[InventarisController::class,"export"])->name("inventaris.export");
-    Route::get("inventaris/grouped/{nama_barang}",[InventarisController::class,"showGrouped"])->name("inventaris.show_grouped"); // Rute baru kita
-    Route::resource("inventaris", InventarisController::class)->parameter('inventaris', 'inventaris');
+
+    // [DIUBAH] Rute ini sekarang pakai ID master inventaris, bukan nama_barang
+    Route::get("inventaris/grouped/{inventaris}",[InventarisController::class,"showGrouped"])->name("inventaris.show_grouped"); 
+
+    // [RUTE BARU] Untuk menambah unit aset detail (form permintaan dosen)
+    Route::get("inventaris/{inventaris}/detail/create", [InventarisController::class, "createAsetDetail"])->name("inventaris.detail.create");
+    Route::post("inventaris/{inventaris}/detail", [InventarisController::class, "storeAsetDetail"])->name("inventaris.detail.store");
+
+    // [TAMBAHKAN DUA RUTE INI] - Rute untuk Edit & Update Unit Aset Detail
+    Route::get("aset-detail/{asetDetail}/edit", [InventarisController::class, "editAsetDetail"])->name("aset-detail.edit");
+    Route::patch("aset-detail/{asetDetail}", [InventarisController::class, "updateAsetDetail"])->name("aset-detail.update");
+
+// [TAMBAHKAN RUTE INI] - Rute untuk Delete Unit Aset Detail
+    Route::delete("aset-detail/{asetDetail}", [InventarisController::class, "destroyAsetDetail"])->name("aset-detail.destroy");
+
+    // Resource Route untuk CRUD Master Inventaris
+    Route::resource("inventaris", InventarisController::class);
 
     Route::resource("acquisitions",AcquisitionController::class);
     Route::resource("rooms",RoomController::class);
