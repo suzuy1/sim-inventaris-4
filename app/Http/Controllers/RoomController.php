@@ -25,7 +25,9 @@ class RoomController extends Controller
     {
         $this->authorize('create', Room::class); // Proteksi
         $units = Unit::all();
-        return view('rooms.create', compact('units'));
+        $totalRooms = Room::count();
+        $availableRooms = Room::where('unit_id', '!=', null)->count(); // Simplifikasi - hitung ruangan yang memiliki unit
+        return view('rooms.create', compact('units', 'totalRooms', 'availableRooms'));
     }
 
     /**

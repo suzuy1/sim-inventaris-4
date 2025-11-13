@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade; // Add this line
+use Illuminate\Support\Facades\View;
 use App\Models\Inventaris;
 use App\Models\Room;        // Tambahkan
 use App\Models\Unit;        // Tambahkan
@@ -52,5 +53,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Transaction::class, TransactionPolicy::class);
         Gate::policy(Request::class, RequestPolicy::class);
         Gate::policy(Acquisition::class, AcquisitionPolicy::class);
+
+        View::composer('layouts.navigation', function ($view) {
+            $pendingRequests = \App\Models\Request::where('status', 'pending')->count();
+            $view->with('pendingRequests', $pendingRequests);
+        });
     }
 }

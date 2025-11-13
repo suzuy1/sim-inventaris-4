@@ -15,7 +15,7 @@ class UnitController extends Controller
     public function index()
     {
         $this->authorize("viewAny", Unit::class); // Proteksi
-        $units = Unit::withCount(["rooms", "inventaris"])->paginate(10);
+        $units = Unit::withCount("rooms")->paginate(10);
         $totalRooms = Room::count();
         $totalInventory = Inventaris::count();
         

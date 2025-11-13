@@ -12,6 +12,7 @@ use App\Http\Controllers\TransactionController; // Import the TransactionControl
 use App\Http\Controllers\RequestController; // Import the RequestController
 use App\Http\Controllers\ReportController; // Import the ReportController
 use App\Http\Controllers\StokHabisPakaiController;
+use App\Http\Controllers\SettingsController;
 
 Route::get("/",[LoginController::class,"index"])->name("login");
 Route::get("/login",[LoginController::class,"index"])->name("login.get");
@@ -54,7 +55,7 @@ Route::middleware("auth")->group(function () {
     Route::resource("requests",RequestController::class);
 
     // Settings Route
-    Route::get("/settings",[DashboardController::class,"settingsIndex"])->name("settings.index");
+    Route::get("/settings",[SettingsController::class,"index"])->name("settings.index");
 
     // Profile Routes
     Route::get("/profile",[UserController::class,"edit"])->name("profile.edit");

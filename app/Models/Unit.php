@@ -10,11 +10,6 @@ class Unit extends Model
         'nama_unit',
     ];
 
-    public function inventaris()
-    {
-        return $this->hasMany(Inventaris::class);
-    }
-
     public function rooms()
     {
         return $this->hasMany(Room::class);
