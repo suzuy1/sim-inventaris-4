@@ -198,38 +198,73 @@ class InventarisController extends Controller
      */
     public function destroy(Inventaris $inventaris)
     {
-        $this->authorize('delete', $inventaris);
+        // Log untuk debugging - pastikan method ini dipanggil
+        \Log::info('=== DELETE METHOD CALLED ===');
+        \Log::info('Request method: ' . request()->method());
+        \Log::info('Request URL: ' . request()->fullUrl());
+        \Log::info('Inventaris ID: ' . $inventaris->id);
+        \Log::info('Inventaris Name: ' . $inventaris->nama_barang);
+        \Log::info('Inventaris Kategori: ' . $inventaris->kategori);
+        \Log::info('User: ' . (auth()->user() ? auth()->user()->name : 'Guest'));
         
-        // Mulai database transaction
-        DB::beginTransaction();
-
         try {
-            // Logika hapus stok/aset detail
-            // Jika 'habis_pakai', hapus stok
-            if ($inventaris->kategori === 'habis_pakai') {
-                $inventaris->stokHabisPakai()->delete();
-            }
-            // Jika 'tidak_habis_pakai', aset_details akan terhapus otomatis
-            // berkat onDelete('cascade') di migrasi
+            // Verifikasi authorization
+            $this->authorize('delete', $inventaris);
+            \Log::info('Authorization passed');
             
-            // Hapus data master
-            $inventaris->delete();
+            DB::beginTransaction();
+            \Log::info('Transaction started');
 
-            // Jika semua berhasil, commit
-            DB::commit();
+            // Log sebelum menghapus - dapatkan data untuk verifikasi
+            $asetDetailsCount = $inventaris->asetDetails()->count();
+            $stokCount = $inventaris->stokHabisPakai()->count();
+            $transactionsCount = $inventaris->transactions()->count();
+            $requestsCount = $inventaris->requests()->count();
             
-            return redirect()->route('inventaris.index')->with('success', 'Master barang (dan semua unitnya) berhasil dihapus.');
+            \Log::info("Data sebelum delete:");
+            \Log::info("- Aset Details count: " . $asetDetailsCount);
+            \Log::info("- Stok count: " . $stokCount);
+            \Log::info("- Transactions count: " . $transactionsCount);
+            \Log::info("- Requests count: " . $requestsCount);
+
+            // Hapus data terkait berdasarkan kategori
+            if ($inventaris->kategori === 'habis_pakai') {
+                $deletedStok = $inventaris->stokHabisPakai()->delete();
+                \Log::info('Deleted stok habis pakai: ' . $deletedStok . ' records');
+            } else {
+                $deletedAsetDetails = $inventaris->asetDetails()->delete();
+                \Log::info('Deleted aset details: ' . $deletedAsetDetails . ' records');
+            }
+
+            // Hapus transaksi dan permintaan terkait secara eksplisit
+            // Meskipun ada onDelete('cascade') di migrasi, ini untuk memastikan
+            $deletedTransactions = $inventaris->transactions()->delete();
+            $deletedRequests = $inventaris->requests()->delete();
+            \Log::info('Deleted transactions: ' . $deletedTransactions . ' records');
+            \Log::info('Deleted requests: ' . $deletedRequests . ' records');
+
+            // Hapus data master
+            $deletedMaster = $inventaris->delete();
+            \Log::info('Deleted master inventaris: ' . ($deletedMaster ? 'SUCCESS' : 'FAILED'));
+
+            DB::commit();
+            \Log::info('Transaction committed');
+            \Log::info('=== DELETE SUCCESS ===');
+            
+            return redirect()->route('inventaris.index')
+                            ->with('success', 'Master barang "' . $inventaris->nama_barang . '" (dan semua unitnya) berhasil dihapus.');
 
         } catch (\Exception $e) {
-            // Jika terjadi error, batalkan semua
             DB::rollBack();
+            \Log::error('Transaction rolled back');
             
-            // Catat errornya untuk debugging
-            Log::error('Gagal menghapus inventaris: ' . $e->getMessage());
+            \Log::error('DELETE FAILED: ' . $e->getMessage());
+            \Log::error('Error in file: ' . $e->getFile());
+            \Log::error('Error on line: ' . $e->getLine());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
 
-            // Beri pesan error yang jelas ke pengguna
             return redirect()->route('inventaris.index')
-                             ->with('error', 'Gagal menghapus data. Kemungkinan data ini masih terhubung dengan data lain (misal: transaksi atau permintaan).');
+                            ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
 

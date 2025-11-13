@@ -61,8 +61,16 @@
 
         .glass-effect {
             background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fallback for browsers that don't support backdrop-filter */
+        @supports not (-webkit-backdrop-filter: blur(1px)) {
+            .glass-effect {
+                background-color: rgba(255, 255, 255, 0.25);
+            }
         }
 
         .floating-shapes {
@@ -183,13 +191,15 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
                                     </svg>
                                 </div>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
                                     class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                                     placeholder="email@example.com"
                                     required
+                                    aria-label="Alamat email"
+                                    aria-describedby="email-help"
                                 >
                             </div>
                         </div>
@@ -205,13 +215,15 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                     </svg>
                                 </div>
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    name="password" 
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
                                     class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                                     placeholder="Masukkan kata sandi"
                                     required
+                                    aria-label="Kata sandi"
+                                    aria-describedby="password-help"
                                 >
                             </div>
                         </div>
@@ -219,25 +231,29 @@
                         <!-- Remember & Forgot -->
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <input 
-                                    id="remember" 
-                                    name="remember" 
-                                    type="checkbox" 
+                                <input
+                                    id="remember"
+                                    name="remember"
+                                    type="checkbox"
                                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    aria-label="Ingat saya"
                                 >
                                 <label for="remember" class="ml-2 block text-sm text-gray-700">
                                     Ingat saya
                                 </label>
                             </div>
-                            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                            <a href="#"
+                               class="text-sm font-medium text-blue-600 hover:text-blue-500 transition duration-200"
+                               aria-label="Lupa kata sandi">
                                 Lupa kata sandi?
                             </a>
                         </div>
 
                         <!-- Submit Button -->
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            aria-label="Masuk ke sistem inventaris"
                         >
                             <span class="flex items-center justify-center">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,7 +268,9 @@
                     <div class="mt-6 pt-6 border-t border-gray-200">
                         <p class="text-center text-sm text-gray-600">
                             Butuh bantuan? 
-                            <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                            <a href="#"
+                               class="font-medium text-blue-600 hover:text-blue-500 transition duration-200"
+                               aria-label="Hubungi administrator">
                                 Hubungi Administrator
                             </a>
                         </p>
@@ -275,9 +293,13 @@
         <div class="bg-red-50 border border-red-200 rounded-xl p-4 shadow-lg">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                            aria-label="Tutup notifikasi error">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="ml-3">
                     <p class="text-sm font-medium text-red-800">
@@ -294,9 +316,13 @@
         <div class="bg-green-50 border border-green-200 rounded-xl p-4 shadow-lg">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                            class="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                            aria-label="Tutup notifikasi sukses">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="ml-3">
                     <p class="text-sm font-medium text-green-800">

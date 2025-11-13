@@ -39,15 +39,31 @@
         /* Glass morphism effect */
         .glass {
             background: rgba(255, 255, 255, 0.7);
+            -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
 
+        /* Fallback for browsers that don't support backdrop-filter */
+        @supports not (-webkit-backdrop-filter: blur(1px)) {
+            .glass {
+                background-color: rgba(255, 255, 255, 0.95);
+            }
+        }
+
         .glass-dark {
             background: rgba(15, 23, 42, 0.8);
+            -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Fallback for browsers that don't support backdrop-filter */
+        @supports not (-webkit-backdrop-filter: blur(1px)) {
+            .glass-dark {
+                background-color: rgba(15, 23, 42, 0.95);
+            }
         }
 
         /* Gradient text */
@@ -172,7 +188,10 @@
                 </div>
                 
                 {{-- Close button for mobile --}}
-                <button @click="sidebarOpen = false" class="lg:hidden p-2 rounded-xl bg-gray-700/50 hover:bg-gray-600/70 transition-all duration-200 hover-lift">
+                <button @click="sidebarOpen = false"
+                        class="lg:hidden p-2 rounded-xl bg-gray-700/50 hover:bg-gray-600/70 transition-all duration-200 hover-lift"
+                        aria-label="Tutup sidebar">
+                    <span class="sr-only">Tutup sidebar</span>
                     <svg class="w-5 h-5 text-gray-400 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -240,10 +259,11 @@
             <div class="p-4 border-t border-gray-700/50 bg-gray-800/40 backdrop-blur-sm">
                 <div class="flex items-center justify-between mb-4">
                     <span class="text-sm font-medium text-gray-400">Tampilan</span>
-                    <button @click="darkMode = !darkMode" 
+                    <button @click="darkMode = !darkMode"
                             class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-                            :class="{ 'bg-gradient-to-r from-purple-600 to-indigo-600': darkMode, 'bg-gray-600': !darkMode }">
-                        <span class="sr-only">Toggle dark mode</span>
+                            :class="{ 'bg-gradient-to-r from-purple-600 to-indigo-600': darkMode, 'bg-gray-600': !darkMode }"
+                            :aria-label="darkMode ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'">
+                        <span class="sr-only" x-text="darkMode ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'"></span>
                         <span class="pointer-events-none relative inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out"
                               :class="{ 'translate-x-5': darkMode, 'translate-x-0': !darkMode }">
                             <span class="absolute inset-0 flex h-full w-full items-center justify-center transition-opacity duration-300 ease-in-out"
@@ -278,8 +298,10 @@
                     {{-- Left Section --}}
                     <div class="flex items-center gap-4">
                         {{-- Mobile menu toggle --}}
-                        <button @click="sidebarOpen = !sidebarOpen" 
-                                class="lg:hidden inline-flex items-center justify-center p-3 rounded-2xl text-gray-600 hover:text-purple-600 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift">
+                        <button @click="sidebarOpen = !sidebarOpen"
+                                class="lg:hidden inline-flex items-center justify-center p-3 rounded-2xl text-gray-600 hover:text-purple-600 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift"
+                                :aria-label="sidebarOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'">
+                            <span class="sr-only" x-text="sidebarOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'"></span>
                             <svg x-show="!sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
@@ -303,9 +325,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
                                 </svg>
                             </div>
-                            <input type="text" 
+                            <input type="text"
                                    class="block w-full pl-12 pr-4 py-3 border border-gray-300/80 rounded-2xl bg-white/80 focus:outline-none focus:ring-3 focus:ring-purple-500/30 focus:border-purple-400 text-sm transition-all duration-300 placeholder-gray-500 shadow-sm hover:shadow-md focus:shadow-lg"
-                                   placeholder="Cari barang, transaksi, atau pengguna...">
+                                   placeholder="Cari barang, transaksi, atau pengguna..."
+                                   aria-label="Kolom pencarian barang, transaksi, atau pengguna">
                         </div>
                     </div>
 
@@ -313,9 +336,10 @@
                     <div class="flex items-center gap-3">
                         
                         {{-- Theme Toggle --}}
-                        <button @click="darkMode = !darkMode" 
+                        <button @click="darkMode = !darkMode"
                                 class="hidden md:flex items-center justify-center p-3 text-gray-600 hover:text-purple-600 hover:bg-white/80 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 hover-lift"
-                                :title="darkMode ? 'Mode Terang' : 'Mode Gelap'">
+                                :title="darkMode ? 'Mode Terang' : 'Mode Gelap'"
+                                :aria-label="darkMode ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'">
                             <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                             </svg>
@@ -326,8 +350,10 @@
 
                         {{-- Notifications --}}
                         <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                            <button @click="open = !open" 
-                                    class="relative p-3 text-gray-600 hover:text-purple-600 hover:bg-white/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift">
+                            <button @click="open = !open"
+                                    class="relative p-3 text-gray-600 hover:text-purple-600 hover:bg-white/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift"
+                                    :aria-label="open ? 'Tutup notifikasi' : 'Buka notifikasi'">
+                                <span class="sr-only" x-text="open ? 'Tutup notifikasi' : 'Buka notifikasi'"></span>
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 0 0-6 6v2.25l-2.47 2.47a.75.75 0 0 0 .53 1.28h15.88a.75.75 0 0 0 .53-1.28L16.5 12V9.75a6 6 0 00-6-6z"/>
                                 </svg>
@@ -359,8 +385,10 @@
 
                         {{-- User Menu --}}
                         <div x-data="{ open: false }" @click.away="open = false" class="relative">
-                            <button @click="open = !open" 
-                                    class="flex items-center gap-3 p-2 rounded-2xl hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift group">
+                            <button @click="open = !open"
+                                    class="flex items-center gap-3 p-2 rounded-2xl hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover-lift group"
+                                    :aria-label="open ? 'Tutup menu pengguna' : 'Buka menu pengguna'">
+                                <span class="sr-only" x-text="open ? 'Tutup menu pengguna' : 'Buka menu pengguna'"></span>
                                 <div class="relative">
                                     <img class="w-10 h-10 rounded-2xl object-cover border-2 border-purple-200 group-hover:border-purple-300 transition-colors shadow-lg" 
                                          src="{{ Auth::user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=e0f2fe&color=0ea5e9&bold=true' }}" 
@@ -388,8 +416,9 @@
                                     <p class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
                                 </div>
-                                <a href="{{ route('profile.edit') }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:text-purple-700 transition-all duration-200 group/item">
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:text-purple-700 transition-all duration-200 group/item"
+                                   aria-label="Buka profil saya">
                                     <div class="bg-gradient-to-br from-purple-100 to-blue-100 p-2 rounded-xl group-hover/item:scale-110 transition-transform duration-200">
                                         <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -397,8 +426,9 @@
                                     </div>
                                     <span>Profil Saya</span>
                                 </a>
-                                <a href="{{ route('settings.index') }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:text-purple-700 transition-all duration-200 group/item">
+                                <a href="{{ route('settings.index') }}"
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:text-purple-700 transition-all duration-200 group/item"
+                                   aria-label="Buka pengaturan">
                                     <div class="bg-gradient-to-br from-purple-100 to-blue-100 p-2 rounded-xl group-hover/item:scale-110 transition-transform duration-200">
                                         <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -410,8 +440,9 @@
                                 <div class="border-t border-gray-100 my-2"></div>
                                 <form action="{{ route('logout') }}" method="POST" class="px-4 py-2">
                                     @csrf
-                                    <button type="submit" 
-                                            class="flex items-center gap-3 w-full text-left text-sm text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 rounded-xl px-2 py-2.5 transition-all duration-200 group/item">
+                                    <button type="submit"
+                                            class="flex items-center gap-3 w-full text-left text-sm text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 rounded-xl px-2 py-2.5 transition-all duration-200 group/item"
+                                            aria-label="Keluar dari sistem">
                                         <div class="bg-gradient-to-br from-red-100 to-orange-100 p-2 rounded-xl group-hover/item:scale-110 transition-transform duration-200">
                                             <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -444,7 +475,9 @@
                                 </div>
                                 <div class="ml-auto pl-3">
                                     <div class="-mx-1.5 -my-1.5">
-                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" class="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600">
+                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()"
+                                                class="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                                                aria-label="Tutup notifikasi sukses">
                                             <span class="sr-only">Dismiss</span>
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -471,7 +504,9 @@
                                 </div>
                                 <div class="ml-auto pl-3">
                                     <div class="-mx-1.5 -my-1.5">
-                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600">
+                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()"
+                                                class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                                                aria-label="Tutup notifikasi error">
                                             <span class="sr-only">Dismiss</span>
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -498,7 +533,9 @@
                                 </div>
                                 <div class="ml-auto pl-3">
                                     <div class="-mx-1.5 -my-1.5">
-                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" class="inline-flex bg-blue-50 rounded-md p-1.5 text-blue-500 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600">
+                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()"
+                                                class="inline-flex bg-blue-50 rounded-md p-1.5 text-blue-500 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-50 focus:ring-blue-600"
+                                                aria-label="Tutup notifikasi info">
                                             <span class="sr-only">Dismiss</span>
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -525,7 +562,9 @@
                                 </div>
                                 <div class="ml-auto pl-3">
                                     <div class="-mx-1.5 -my-1.5">
-                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" class="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()"
+                                                class="inline-flex bg-yellow-50 rounded-md p-1.5 text-yellow-500 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+                                                aria-label="Tutup notifikasi peringatan">
                                             <span class="sr-only">Dismiss</span>
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />

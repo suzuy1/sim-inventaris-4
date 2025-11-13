@@ -12,25 +12,34 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('inventaris.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <a href="{{ route('inventaris.create') }}"
+                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                       aria-label="Tambah inventaris baru">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                         Tambah Inventaris
                     </a>
-                    <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <button onclick="document.getElementById('importModal').classList.remove('hidden')"
+                            class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                            aria-label="Buka modal impor data inventaris">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
                         Impor Data
                     </button>
-                    <a href="{{ route('inventaris.export') }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <a href="{{ route('inventaris.export') }}"
+                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                       aria-label="Ekspor data inventaris">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                         Ekspor Data
                     </a>
-                    <a href="{{ route('inventaris.print_all') }}" target="_blank" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-600 to-slate-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <a href="{{ route('inventaris.print_all') }}"
+                       target="_blank"
+                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-600 to-slate-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                       aria-label="Cetak semua data inventaris">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
                         </svg>
@@ -49,19 +58,24 @@
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <input 
-                        type="text" 
-                        name="search" 
-                        placeholder="Cari nama barang..." 
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Cari nama barang..."
                         class="block w-full rounded-lg border-0 bg-white/50 backdrop-blur-sm pl-10 pr-4 py-3 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all duration-200 sm:text-sm"
                         value="{{ request('search') }}"
+                        aria-label="Cari nama barang"
                     >
                 </div>
-                <button type="submit" class="rounded-lg bg-gradient-to-r from-gray-800 to-slate-800 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                <button type="submit"
+                        class="rounded-lg bg-gradient-to-r from-gray-800 to-slate-800 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                        aria-label="Cari inventaris">
                     Cari
                 </button>
                 @if(request('search'))
-                    <a href="{{ route('inventaris.index') }}" class="rounded-lg bg-gradient-to-r from-gray-200 to-slate-200 px-6 py-3 text-sm font-semibold text-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <a href="{{ route('inventaris.index') }}"
+                       class="rounded-lg bg-gradient-to-r from-gray-200 to-slate-200 px-6 py-3 text-sm font-semibold text-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                       aria-label="Reset pencarian inventaris">
                         Reset
                     </a>
                 @endif
@@ -243,21 +257,28 @@
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
                                     <div class="flex items-center justify-end gap-x-4">
-                                        <a href="{{ route('inventaris.show_grouped', $item) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 group-hover:scale-105 transition-all duration-200 font-semibold">
+                                        <a href="{{ route('inventaris.show_grouped', $item) }}"
+                                           class="inline-flex items-center text-indigo-600 hover:text-indigo-800 group-hover:scale-105 transition-all duration-200 font-semibold"
+                                           aria-label="Lihat detail {{ $item->nama_barang }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                                             </svg>
                                             Lihat Detail
                                         </a>
-                                        <form action="{{ route('inventaris.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus master barang ini beserta semua unit asetnya? Tindakan ini tidak dapat dibatalkan.');">
+                                        <!-- PERUBAHAN: onsubmit dipanggil dengan parameter yang lebih sederhana -->
+                                        <form action="{{ route('inventaris.destroy', $item->id) }}" method="POST" 
+                                              onsubmit="return confirmDelete('{{ $item->nama_barang }}');"
+                                              class="delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center text-red-600 hover:text-red-800 group-hover:scale-105 transition-all duration-200 font-semibold">
+                                            <button type="submit"
+                                                    class="inline-flex items-center text-red-600 hover:text-red-800 group-hover:scale-105 transition-all duration-200 font-semibold"
+                                                    aria-label="Hapus {{ $item->nama_barang }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm-1 3a1 1 0 100 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
                                                 </svg>
-                                                Hapus
+                                                <span>Hapus</span>
                                             </button>
                                         </form>
                                     </div>
@@ -274,7 +295,9 @@
                                         </div>
                                         <p class="text-lg font-semibold text-gray-900 mb-1">Tidak ada data inventaris</p>
                                         <p class="text-gray-500 mb-4">Mulai dengan menambahkan inventaris baru</p>
-                                        <a href="{{ route('inventaris.create') }}" class="inline-flex items-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                                        <a href="{{ route('inventaris.create') }}"
+                                           class="inline-flex items-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                                           aria-label="Tambah inventaris pertama">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                                             </svg>
@@ -336,7 +359,7 @@
                     <div class="mb-4">
                         <label for="file" class="block text-sm font-medium text-gray-700 mb-2">Pilih File</label>
                         <div class="flex items-center justify-center w-full">
-                            <label for="file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                            <label for="file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200" tabindex="0">
                                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                     <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
@@ -344,21 +367,23 @@
                                     <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk upload</span></p>
                                     <p class="text-xs text-gray-500">XLSX, XLS (MAX. 10MB)</p>
                                 </div>
-                                <input id="file" name="file" type="file" class="hidden" accept=".xlsx,.xls" required />
+                                <input id="file" name="file" type="file" class="hidden" accept=".xlsx,.xls" required aria-label="Pilih file untuk diimpor" />
                             </label>
                         </div>
                     </div>
                     <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             class="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                            aria-label="Impor data inventaris"
                         >
                             Impor Data
                         </button>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onclick="document.getElementById('importModal').classList.add('hidden')"
                             class="mt-3 inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-gray-200 to-slate-200 px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 sm:col-start-1 sm:mt-0"
+                            aria-label="Tutup modal impor data"
                         >
                             Batal
                         </button>
@@ -368,8 +393,9 @@
         </div>
     </div>
 
+    <!-- PERUBAHAN: Script yang lebih sederhana dan andal -->
     <script>
-        // Tambahkan efek interaktif untuk file upload
+        // Script untuk upload file (tidak berubah)
         document.getElementById('file').addEventListener('change', function(e) {
             const fileName = e.target.files[0]?.name;
             if (fileName) {
@@ -385,5 +411,13 @@
                 `;
             }
         });
+
+        // FUNGSI DELETE YANG DIPERBAIKI
+        // Fungsi ini hanya meminta konfirmasi dan mengembalikan nilai true/false.
+        // Browser akan menangani sisanya.
+        function confirmDelete(itemName) {
+            return confirm(`Apakah Anda yakin ingin menghapus master barang "${itemName}" beserta semua unit asetnya? Tindakan ini tidak dapat dibatalkan.`);
+        }
     </script>
+    <!-- AKHIR PERUBAHAN -->
 @endsection

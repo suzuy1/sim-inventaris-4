@@ -37,7 +37,9 @@ Route::middleware("auth")->group(function () {
     Route::delete("aset-detail/{asetDetail}", [InventarisController::class, "destroyAsetDetail"])->name("aset-detail.destroy");
 
     // Resource Routes
-    Route::resource("inventaris", InventarisController::class);
+    Route::resource("inventaris", InventarisController::class)->parameters([
+        'inventaris' => 'inventaris'
+    ]);
     Route::resource("acquisitions", AcquisitionController::class);
     Route::resource("rooms", RoomController::class);
     Route::resource("stok", StokHabisPakaiController::class);
