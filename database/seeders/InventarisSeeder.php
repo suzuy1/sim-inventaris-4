@@ -11,19 +11,8 @@ class InventarisSeeder extends Seeder
     public function run(): void
     {
         $inventaris1 = Inventaris::create([
-            // 'kode_inventaris' => Dihapus, dihandle Observer
             'nama_barang' => 'Pulpen Standard',
-            'kategori' => 'habis_pakai', // Sesuaikan
-            'pemilik' => 'FT',
-            'sumber_dana' => 'DANA-A',
-            'tahun_beli' => '2023-01-15', // Format YYYY-MM-DD
-            'nomor_unit' => 1,
-            'kondisi_baik' => 0, // Untuk habis pakai, jumlah ada di stok
-            'kondisi_rusak_ringan' => 0,
-            'kondisi_rusak_berat' => 0,
-            'lokasi' => 'Rak 1',
-            'room_id' => 1,
-            'unit_id' => 1,
+            'kategori' => 'habis_pakai',
         ]);
 
         StokHabisPakai::create([
@@ -34,51 +23,18 @@ class InventarisSeeder extends Seeder
         ]);
 
         Inventaris::create([
-            // 'kode_inventaris' => Dihapus, dihandle Observer
             'nama_barang' => 'Laptop Lenovo',
-            'kategori' => 'tidak_habis_pakai', // Sesuaikan
-            'pemilik' => 'FE',
-            'sumber_dana' => 'DANA-B',
-            'tahun_beli' => '2024-03-10', // Format YYYY-MM-DD
-            'nomor_unit' => 2,
-            'kondisi_baik' => 1, // Jumlah kondisi
-            'kondisi_rusak_ringan' => 0,
-            'kondisi_rusak_berat' => 0,
-            'lokasi' => 'Meja 5',
-            'room_id' => 2,
-            'unit_id' => 2,
+            'kategori' => 'tidak_habis_pakai',
         ]);
 
         Inventaris::create([
-            // 'kode_inventaris' => Dihapus, dihandle Observer
             'nama_barang' => 'Meja Kantor',
-            'kategori' => 'aset_tetap', // Sesuaikan
-            'pemilik' => 'LIB',
-            'sumber_dana' => 'DANA-C',
-            'tahun_beli' => '2022-11-20', // Format YYYY-MM-DD
-            'nomor_unit' => 3,
-            'kondisi_baik' => 0, // Jumlah kondisi
-            'kondisi_rusak_ringan' => 1,
-            'kondisi_rusak_berat' => 0,
-            'lokasi' => 'Area Baca',
-            'room_id' => 3,
-            'unit_id' => 3,
+            'kategori' => 'aset_tetap',
         ]);
 
         $inventaris4 = Inventaris::create([
-            // 'kode_inventaris' => Dihapus, dihandle Observer
             'nama_barang' => 'Spidol Whiteboard',
-            'kategori' => 'habis_pakai', // Sesuaikan
-            'pemilik' => 'FT',
-            'sumber_dana' => 'DANA-A',
-            'tahun_beli' => '2023-01-15', // Format YYYY-MM-DD
-            'nomor_unit' => 4,
-            'kondisi_baik' => 0,
-            'kondisi_rusak_ringan' => 0,
-            'kondisi_rusak_berat' => 0,
-            'lokasi' => 'Rak 1',
-            'room_id' => 1,
-            'unit_id' => 1,
+            'kategori' => 'habis_pakai',
         ]);
 
         StokHabisPakai::create([
