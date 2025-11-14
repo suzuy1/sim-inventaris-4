@@ -6,17 +6,39 @@
         <div class="mb-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div class="mb-4 md:mb-0">
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Manajemen Inventaris</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                        @if(isset($kategori) && $kategori)
+                            Manajemen Inventaris - {{ $kategori }}
+                        @else
+                            Manajemen Inventaris
+                        @endif
+                    </h1>
                     <p class="mt-2 text-sm text-gray-600 max-w-2xl">
-                        Kelola dan pantau semua barang inventaris Anda dalam satu tempat. Data dikelompokkan berdasarkan nama barang untuk kemudahan analisis.
+                        @if(isset($kategori) && $kategori)
+                            Kelola dan pantau inventaris kategori {{ $kategori }}. Data dikelompokkan berdasarkan nama barang untuk kemudahan analisis.
+                        @else
+                            Kelola dan pantau semua barang inventaris Anda dalam satu tempat. Data dikelompokkan berdasarkan nama barang untuk kemudahan analisis.
+                        @endif
                     </p>
+                    <!-- Menampilkan tombol kembali ke pilih jenis jika sedang difilter berdasarkan kategori -->
+                    @if(isset($kategori) && $kategori)
+                        <div class="mt-3">
+                            <a href="{{ route('inventaris.pilih_jenis') }}" 
+                               class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                Kembali ke Pilih Jenis Inventaris
+                            </a>
+                        </div>
+                    @endif
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <a href="{{ route('inventaris.create') }}"
                        class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                        aria-label="Tambah inventaris baru">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M10 5a1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                         Tambah Inventaris
                     </a>
@@ -38,10 +60,10 @@
                     </a>
                     <a href="{{ route('inventaris.print_all') }}"
                        target="_blank"
-                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-600 to-slate-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-600 to-slate-60 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                        aria-label="Cetak semua data inventaris">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M5 4v3H4a2 0 0-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
                         </svg>
                         Cetak Semua
                     </a>

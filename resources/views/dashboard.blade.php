@@ -199,20 +199,24 @@
             </div>
 
             {{-- Navigation --}}
+            {{-- Navigation --}}
             <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                 @php
                     $menuItems = [
                         ['route' => 'dashboard', 'label' => 'Dasbor', 'icon' => 'heroicon-o-home'],
+                        
+                        // [REVISI] Ini adalah menu "Barang" yang sudah diubah
                         [
                             'label' => 'Barang',
                             'icon' => 'heroicon-o-cube',
                             'children' => [
-                                ['route' => 'inventaris.index', 'params' => ['kategori' => 'tidak_habis_pakai'], 'label' => 'Tidak Habis Pakai'],
-                                ['route' => 'inventaris.index', 'params' => ['kategori' => 'habis_pakai'], 'label' => 'Habis Pakai'],
-                                ['route' => 'inventaris.index', 'params' => ['kategori' => 'aset_tetap'], 'label' => 'Aset Tetap'],
+                                // Link ke halaman "Pilih Jenis Inventaris"
+                                ['route' => 'inventaris.pilih_jenis', 'label' => 'Inventaris'],
+                                // Link ke "Semua Barang" (tanpa filter)
                                 ['route' => 'inventaris.index', 'label' => 'Semua Barang'],
                             ]
                         ],
+                        // Sisa menu biarkan sama
                         ['route' => 'acquisitions.index', 'label' => 'Akuisisi', 'icon' => 'heroicon-o-arrow-up-circle'],
                         ['route' => 'rooms.index', 'label' => 'Ruangan', 'icon' => 'heroicon-o-building-library'],
                         ['route' => 'units.index', 'label' => 'Unit', 'icon' => 'heroicon-o-squares-2x2'],
@@ -224,30 +228,35 @@
 
                 @foreach($menuItems as $item)
                     @if(isset($item['children']))
+                        {{-- Active state untuk parent 'Barang' (inventaris.* sudah mencakup kedua route baru kita) --}}
                         <x-sidebar-dropdown :label="$item['label']" :icon="$item['icon']" :active="request()->routeIs('inventaris.*')">
+                            
                             @foreach($item['children'] as $child)
                                 @php
                                     $isChildActive = false;
                                     $childParams = $child['params'] ?? [];
 
-                                    if (request()->routeIs($child['route'])) {
-                                        if (isset($childParams['kategori'])) {
-                                            $isChildActive = request()->query('kategori') === $childParams['kategori'];
-                                        } elseif (!request()->query('kategori')) {
-                                            $isChildActive = !request()->has('kategori');
-                                        }
+                                    // [REVISI] Logika baru untuk active state link anak
+                                    if ($child['route'] === 'inventaris.pilih_jenis') {
+                                        // Aktif jika kita di halaman "pilih-jenis"
+                                        $isChildActive = request()->routeIs('inventaris.pilih_jenis');
+                                    
+                                    } elseif ($child['route'] === 'inventaris.index') {
+                                        // Aktif jika kita di "index" TAPI tanpa parameter "kategori"
+                                        $isChildActive = request()->routeIs('inventaris.index') && !request()->has('kategori');
                                     }
                                 @endphp
-                                <x-sidebar-link 
-                                    :route="$child['route']" 
+                                <x-sidebar-link
+                                    :route="$child['route']"
                                     :params="$childParams"
                                     :label="$child['label']"
                                     :active="$isChildActive" />
                             @endforeach
+
                         </x-sidebar-dropdown>
                     @else
-                        <x-sidebar-link 
-                            :route="$item['route']" 
+                        <x-sidebar-link
+                            :route="$item['route']"
                             :label="$item['label']"
                             :icon="$item['icon']"
                             :active="request()->routeIs($item['route'] . '*')" />

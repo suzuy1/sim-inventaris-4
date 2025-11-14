@@ -6,11 +6,20 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="mb-4 md:mb-0">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
-                    Detail Unit Aset: {{ $inventaris->nama_barang }}
+                    Detail Unit Aset: {{ $inventaris->nama_barang }} ({{ $inventaris->kategori }})
                 </h1>
                 <p class="mt-2 text-sm text-gray-600 max-w-2xl">
-                    Berikut adalah daftar semua unit aset untuk {{ $inventaris->nama_barang }}.
+                    Berikut adalah daftar semua unit aset untuk {{ $inventaris->nama_barang }} dalam kategori {{ $inventaris->kategori }}.
                 </p>
+                <div class="mt-3">
+                    <a href="{{ route('inventaris.pilih_jenis') }}" 
+                       class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Kembali ke Pilih Jenis Inventaris
+                    </a>
+                </div>
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('inventaris.detail.create', $inventaris) }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">

@@ -22,6 +22,8 @@ Route::middleware("auth")->group(function () {
     Route::get("/dashboard",[DashboardController::class,"index"])->name("dashboard");
     Route::post("/logout",[LoginController::class,"logout"])->name("logout");
 
+    Route::get("/inventaris/pilih-jenis", [InventarisController::class, "pilihJenis"])->name("inventaris.pilih_jenis");
+
     // Inventaris Routes
     Route::get("/inventaris/print_all",[InventarisController::class,"printAll"])->name("inventaris.print_all");
     Route::get("/inventaris/print_single/{id}",[InventarisController::class,"printSingle"])->name("inventaris.print_single");

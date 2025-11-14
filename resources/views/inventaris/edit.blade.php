@@ -55,9 +55,19 @@
                                     @if($inventaris->asetDetails->count() > 0 || $inventaris->stokHabisPakai->count() > 0) disabled @endif >
 
                                     <option value="">-- Pilih Kategori --</option>
-                                    <option value="tidak_habis_pakai" @if(old('kategori', $inventaris->kategori) == 'tidak_habis_pakai') selected @endif>Tidak Habis Pakai (Aset)</option>
-                                    <option value="habis_pakai" @if(old('kategori', $inventaris->kategori) == 'habis_pakai') selected @endif>Habis Pakai (Stok)</option>
-                                    <option value="aset_tetap" @if(old('kategori', $inventaris->kategori) == 'aset_tetap') selected @endif>Aset Tetap</option>
+                                    <option value="Elektronik" @if(old('kategori', $inventaris->kategori) == 'Elektronik') selected @endif>Elektronik</option>
+                                    <option value="Furniture" @if(old('kategori', $inventaris->kategori) == 'Furniture') selected @endif>Furniture</option>
+                                    <option value="Kendaraan" @if(old('kategori', $inventaris->kategori) == 'Kendaraan') selected @endif>Kendaraan</option>
+                                    <option value="Alat Tulis Kantor" @if(old('kategori', $inventaris->kategori) == 'Alat Tulis Kantor') selected @endif>Alat Tulis Kantor</option>
+                                    <option value="Peralatan Listrik" @if(old('kategori', $inventaris->kategori) == 'Peralatan Listrik') selected @endif>Peralatan Listrik</option>
+                                    <option value="Peralatan Kebersihan" @if(old('kategori', $inventaris->kategori) == 'Peralatan Kebersihan') selected @endif>Peralatan Kebersihan</option>
+                                    <option value="Peralatan Dapur" @if(old('kategori', $inventaris->kategori) == 'Peralatan Dapur') selected @endif>Peralatan Dapur</option>
+                                    <option value="Peralatan Medis" @if(old('kategori', $inventaris->kategori) == 'Peralatan Medis') selected @endif>Peralatan Medis</option>
+                                    <option value="Peralatan Teknologi" @if(old('kategori', $inventaris->kategori) == 'Peralatan Teknologi') selected @endif>Peralatan Teknologi</option>
+                                    <option value="Barang Habis Pakai Medis" @if(old('kategori', $inventaris->kategori) == 'Barang Habis Pakai Medis') selected @endif>Barang Habis Pakai Medis</option>
+                                    <option value="Barang Habis Pakai Kebersihan" @if(old('kategori', $inventaris->kategori) == 'Barang Habis Pakai Kebersihan') selected @endif>Barang Habis Pakai Kebersihan</option>
+                                    <option value="Barang Habis Pakai ATK" @if(old('kategori', $inventaris->kategori) == 'Barang Habis Pakai ATK') selected @endif>Barang Habis Pakai ATK</option>
+                                    <option value="Obat" @if(old('kategori', $inventaris->kategori) == 'Obat') selected @endif>Obat</option>
                                 </select>
 
                                 @if($inventaris->asetDetails->count() > 0 || $inventaris->stokHabisPakai->count() > 0)

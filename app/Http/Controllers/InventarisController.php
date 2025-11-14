@@ -30,7 +30,8 @@ class InventarisController extends Controller
         $this->authorize('viewAny', Inventaris::class);
 
         $query = Inventaris::query()
-            ->where('kategori', '!=', 'habis_pakai') // Fokus pada barang tidak habis pakai/aset
+            // [REVISI] Hapus filter 'habis_pakai'
+            // ->where('kategori', '!=', 'habis_pakai')
             ->withCount([
                 'asetDetails', // Menghitung total unit
                 'asetDetails as total_baik' => function ($q) {
@@ -44,24 +45,20 @@ class InventarisController extends Controller
                 },
             ]);
 
+        // [REVISI] Tambahkan filter berdasarkan kategori dari request
+        $kategori = $request->input('kategori');
+        if ($kategori) {
+            $query->where('kategori', $kategori);
+        }
+
         if ($request->has('search')) {
             $query->where('nama_barang', 'like', '%' . $request->search . '%');
         }
 
-        // Ambil data (termasuk yang tidak punya detail aset, misal baru dibuat)
         $inventaris = $query->paginate(10);
 
-        // Untuk kartu statistik di atas (ini juga bisa disederhanakan)
-        // $totalStats = [
-        //     'total_baik' => $inventaris->sum('total_baik'),
-        //     'total_rusak_ringan' => $inventaris->sum('total_rusak_ringan'),
-        //     'total_rusak_berat' => $inventaris->sum('total_rusak_berat'),
-        //     'total_jenis' => $inventaris->total()
-        // ];
-        // return view('inventaris.index', compact('inventaris', 'totalStats'));
-
-        // Biarkan view lama menghitung SUM-nya sendiri
-        return view('inventaris.index', compact('inventaris'));
+        // [REVISI] Kirim $kategori (misal "Elektronik" atau null) ke view
+        return view('inventaris.index', compact('inventaris', 'kategori'));
     }
 
     /**
@@ -79,30 +76,38 @@ class InventarisController extends Controller
      * Store a newly created resource in storage.
      * LOGIKA DIUBAH: Hanya menyimpan data master (nama & kategori)
      */
-    public function store(StoreInventarisRequest $request) // Validasi mungkin perlu disesuaikan
+    public function store(StoreInventarisRequest $request)
     {
         $this->authorize('create', Inventaris::class);
-        $validatedData = $request->validated(); // Asumsi validasi minimal 'nama_barang' & 'kategori'
+        $validatedData = $request->validated();
+
+        // [REVISI] Definisikan kategori yg habis pakai
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
 
         DB::beginTransaction();
         try {
             // 1. Buat master inventaris
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
-                'kategori' => $validatedData['kategori'], // misal: 'tidak_habis_pakai'
+                'kategori' => $validatedData['kategori'],
             ]);
 
-            // 2. Logika untuk barang habis pakai
-            if ($validatedData['kategori'] === 'habis_pakai' && isset($validatedData['initial_stok'])) {
+            // [REVISI] 2. Logika untuk barang habis pakai
+            if (in_array($validatedData['kategori'], $habisPakaiKategori)) {
                 StokHabisPakai::create([
                     'inventaris_id' => $inventaris->id,
-                    'jumlah_masuk' => $validatedData['initial_stok'],
+                    'jumlah_masuk' => $validatedData['initial_stok'] ?? 0, // Ambil stok awal
                     'jumlah_keluar' => 0,
                     'tanggal' => now()->toDateString(),
                 ]);
-            } 
-            // 3. Logika untuk barang tidak habis pakai / aset tetap (membuat aset_detail awal)
-            else if (in_array($validatedData['kategori'], ['tidak_habis_pakai', 'aset_tetap'])) {
+            }
+            // [REVISI] 3. Logika untuk barang tidak habis pakai / aset
+            else {
                 $kondisiBaik = $validatedData['kondisi_baik'] ?? 0;
                 $kondisiRusakRingan = $validatedData['kondisi_rusak_ringan'] ?? 0;
                 $kondisiRusakBerat = $validatedData['kondisi_rusak_berat'] ?? 0;
@@ -112,8 +117,8 @@ class InventarisController extends Controller
                     AsetDetail::create([
                         'inventaris_id' => $inventaris->id,
                         'kondisi' => 'Baik',
-                        'kode_inv' => $inventaris->id . '-B-' . ($i + 1), // Contoh kode inventaris
-                        // Field lain bisa diisi default atau null
+                        // Contoh kode inventaris, bisa disesuaikan lagi nanti
+                        'kode_inv' => $inventaris->id . '-B-' . ($i + 1),
                     ]);
                 }
 
@@ -122,7 +127,7 @@ class InventarisController extends Controller
                     AsetDetail::create([
                         'inventaris_id' => $inventaris->id,
                         'kondisi' => 'Rusak Ringan',
-                        'kode_inv' => $inventaris->id . '-RR-' . ($i + 1), // Contoh kode inventaris
+                        'kode_inv' => $inventaris->id . '-RR-' . ($i + 1),
                     ]);
                 }
 
@@ -131,16 +136,16 @@ class InventarisController extends Controller
                     AsetDetail::create([
                         'inventaris_id' => $inventaris->id,
                         'kondisi' => 'Rusak Berat',
-                        'kode_inv' => $inventaris->id . '-RB-' . ($i + 1), // Contoh kode inventaris
+                        'kode_inv' => $inventaris->id . '-RB-' . ($i + 1),
                     ]);
                 }
             }
 
             DB::commit();
 
-            // Redirect ke halaman detail (showGrouped) untuk master barang yg baru dibuat
+            // Redirect ke halaman detail (showGrouped)
             return redirect()->route('inventaris.show_grouped', $inventaris)
-                             ->with('success', 'Master barang berhasil ditambahkan. Silakan tambahkan unit aset.');
+                             ->with('success', 'Master barang berhasil ditambahkan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -178,17 +183,19 @@ class InventarisController extends Controller
     public function update(Request $request, Inventaris $inventaris)
     {
         $this->authorize('update', $inventaris);
-        // Validasi simpel
+        
+        // [REVISI] Validasi dilonggarkan
         $validatedData = $request->validate([
             'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|in:habis_pakai,tidak_habis_pakai,aset_tetap',
+            'kategori' => 'required|string|max:255', // Tidak pakai 'in:' lagi
         ]);
 
         $inventaris->update($validatedData);
-
-        // ... (handle jika kategori berubah dari/ke habis_pakai)
         
-        return redirect()->route('inventaris.index')->with('success', 'Master barang berhasil diperbarui.');
+        // [REVISI] Arahkan kembali ke 'index' (yang sudah difilter)
+        // Kita tambahkan parameter 'kategori' agar kembalinya pas
+        return redirect()->route('inventaris.index', ['kategori' => $inventaris->kategori])
+                         ->with('success', 'Master barang berhasil diperbarui.');
     }
 
     /**
@@ -233,8 +240,16 @@ class InventarisController extends Controller
             \Log::info("- Transactions count: " . $transactionsCount);
             \Log::info("- Requests count: " . $requestsCount);
 
+            // [REVISI] Definisikan kategori yg habis pakai
+            $habisPakaiKategori = [
+                'Barang Habis Pakai Medis',
+                'Barang Habis Pakai Kebersihan',
+                'Barang Habis Pakai ATK',
+                'Obat'
+            ];
+            
             // Hapus data terkait berdasarkan kategori
-            if ($inventaris->kategori === 'habis_pakai') {
+            if (in_array($inventaris->kategori, $habisPakaiKategori)) {
                 $deletedStok = $inventaris->stokHabisPakai()->delete();
                 \Log::info('Deleted stok habis pakai: ' . $deletedStok . ' records');
             } else {
@@ -448,6 +463,33 @@ class InventarisController extends Controller
         }
     }
 
+    /**
+     * [BARU] Menampilkan halaman untuk memilih jenis inventaris (Elektronik, Furniture, dll.)
+     */
+    // [REVISI] Method baru untuk menampilkan halaman pilih jenis
+    public function pilihJenis()
+    {
+        $this->authorize('viewAny', Inventaris::class); // Pakai policy yang sama dengan index
+
+        $kategoriList = [
+            'Elektronik',
+            'Furniture',
+            'Kendaraan',
+            'Alat Tulis Kantor', // Ini Kategori Aset
+            'Peralatan Listrik',
+            'Peralatan Kebersihan', // Ini Kategori Aset
+            'Peralatan Dapur',
+            'Peralatan Medis', // Ini Kategori Aset
+            'Peralatan Teknologi',
+            'Barang Habis Pakai Medis', // Ini Kategori Habis Pakai
+            'Barang Habis Pakai Kebersihan', // Ini Kategori Habis Pakai
+            'Barang Habis Pakai ATK', // Ini Kategori Habis Pakai
+            'Obat', // Ini Kategori Habis Pakai
+        ];
+
+        return view('inventaris.pilih-jenis', compact('kategoriList'));
+    }
+
 
     // --- Method Bawaan (Perlu Penyesuaian Nanti) ---
 
@@ -488,7 +530,15 @@ class InventarisController extends Controller
     
     public function getStock(Inventaris $inventaris)
     {
-        if ($inventaris->kategori === 'habis_pakai') {
+        // [REVISI] Definisikan kategori yg habis pakai
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+        
+        if (in_array($inventaris->kategori, $habisPakaiKategori)) {
             $sisaStok = StokHabisPakai::where('inventaris_id', $inventaris->id)
                                     ->sum(DB::raw('jumlah_masuk - jumlah_keluar'));
             return response()->json(['sisa_stok' => $sisaStok]);

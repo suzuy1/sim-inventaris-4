@@ -11,8 +11,6 @@ class StoreInventarisRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Set ke true jika semua user terautentikasi boleh menambah
-        // Atau tambahkan logika otorisasi di sini jika perlu
         return true;
     }
 
@@ -23,17 +21,41 @@ class StoreInventarisRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Pindahkan rules dari InventarisController@store ke sini
-        return [
+        // [REVISI] Kita buat logikanya di sini
+        $rules = [
             'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|in:tidak_habis_pakai,habis_pakai,aset_tetap',
-            'lokasi' => 'nullable|string|max:255', // Tambahkan validasi untuk lokasi
-            'kode_inventaris' => 'nullable|string|max:255|unique:inventaris,kode_inventaris', // Tambahkan validasi untuk kode_inventaris
-            'kondisi_baik' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
-            'kondisi_rusak_ringan' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
-            'kondisi_rusak_berat' => 'nullable|integer|min:0|required_if:kategori,tidak_habis_pakai,aset_tetap',
-            'initial_stok' => 'nullable|integer|min:0|required_if:kategori,habis_pakai',
+            'kategori' => 'required|string|max:255', // Dibuat fleksibel
+            
+            // Validasi lama, kita hapus 'unique' dan 'lokasi' karena tidak ada di form create.
+            // 'lokasi' => 'nullable|string|max:255',
+            // 'kode_inventaris' => 'nullable|string|max:255|unique:inventaris,kode_inventaris', 
         ];
+
+        // Definisikan kategori mana saja yang termasuk 'habis pakai'
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+
+        $kategori = $this->input('kategori');
+
+        // Jika kategori yang dipilih ada di dalam array habisPakaiKategori
+        if (in_array($kategori, $habisPakaiKategori)) {
+            // Wajibkan 'initial_stok'
+            $rules['initial_stok'] = 'required|integer|min:0';
+        
+        // Jika kategori dipilih (bukan empty) DAN BUKAN barang habis pakai (berarti Aset)
+        } elseif ($kategori && !in_array($kategori, $habisPakaiKategori)) {
+            // Wajibkan 'kondisi'
+            $rules['kondisi_baik'] = 'required|integer|min:0';
+            $rules['kondisi_rusak_ringan'] = 'required|integer|min:0';
+            $rules['kondisi_rusak_berat'] = 'required|integer|min:0';
+        }
+        // Jika $kategori = null (belum dipilih), tidak ada rules tambahan
+
+        return $rules;
     }
 
     /**
@@ -44,8 +66,9 @@ class StoreInventarisRequest extends FormRequest
     public function messages(): array
     {
          return [
-             'initial_stok.required_if' => 'Stok awal wajib diisi untuk kategori barang habis pakai.',
-             // Tambahkan pesan custom lainnya jika perlu
+             'initial_stok.required' => 'Stok awal wajib diisi untuk kategori barang habis pakai.',
+             'kondisi_baik.required' => 'Jumlah kondisi baik wajib diisi untuk kategori aset.',
+             // ... (bisa tambahkan pesan lain jika perlu)
          ];
     }
 }
