@@ -39,7 +39,7 @@ Route::middleware("auth")->group(function () {
     // Resource Routes
     Route::resource("inventaris", InventarisController::class)->parameters([
         'inventaris' => 'inventaris'
-    ])->where('inventaris', '[0-9]+');
+    ]);
     Route::resource("acquisitions", AcquisitionController::class);
     Route::resource("rooms", RoomController::class);
     Route::resource("stok", StokHabisPakaiController::class);
@@ -56,4 +56,7 @@ Route::middleware("auth")->group(function () {
     // Report Routes
     Route::get("reports/transactions",[ReportController::class,"transactionReport"])->name("reports.transactions");
     Route::get("reports/item-history",[ReportController::class,"itemHistoryReport"])->name("reports.item_history");
+
+    // Activity Log Routes
+    Route::get("/activity/logs",[DashboardController::class,"activityLogs"])->name("activity.logs");
 });

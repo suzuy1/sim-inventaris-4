@@ -45,4 +45,11 @@ class DashboardController extends Controller
     {
         return view('settings.index');
     }
+
+    public function activityLogs()
+    {
+        // For now, we'll just return a view.
+        // In a real application, you would fetch activity log data here.
+        return view('dashboard.activity-logs');
+    }
 }
