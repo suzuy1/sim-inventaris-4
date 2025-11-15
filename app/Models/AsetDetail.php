@@ -29,6 +29,7 @@ class AsetDetail extends Model
         'keterangan',
         'tgl_perbaikan',
         'tgl_pengecekan',
+        'tipe_barang',
     ];
 
     /**

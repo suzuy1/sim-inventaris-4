@@ -6,7 +6,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="mb-4 md:mb-0">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
-                    Detail Unit Aset: {{ $inventaris->nama_barang }} ({{ $inventaris->kategori }})
+                    Detail Unit Aset : {{ $inventaris->nama_barang }} ({{ $inventaris->kategori }})
                 </h1>
                 <p class="mt-2 text-sm text-gray-600 max-w-2xl">
                     Berikut adalah daftar semua unit aset untuk {{ $inventaris->nama_barang }} dalam kategori {{ $inventaris->kategori }}.
@@ -28,7 +28,7 @@
                     </svg>
                     Tambah Unit Aset
                 </a>
-                <a href="{{ route('inventaris.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-200 to-slate-200 px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                <a href="{{ route('inventaris.index', ['kategori' => $inventaris->kategori]) }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-200 to-slate-200 px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
@@ -45,6 +45,7 @@
                     <tr>
                         <th scope="col" class="py-4 pl-6 pr-3 text-left text-sm font-semibold text-gray-900">No</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Kode Unit</th>
+                        <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Tipe Barang</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Kondisi</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Lokasi/Ruangan</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">P. Jawab</th>
@@ -63,6 +64,9 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-gray-900">
                                 {{ $detail->kode_inv }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                                {{ $detail->tipe_barang ?? '-' }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm">
                                 @if($detail->kondisi == 'Baik')
@@ -112,7 +116,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="whitespace-nowrap px-4 py-12 text-center">
+                            <td colspan="9" class="whitespace-nowrap px-4 py-12 text-center">
                                 <div class="text-gray-500">
                                     <p class="text-lg font-semibold text-gray-900 mb-1">Belum ada unit aset</p>
                                     <p class="text-gray-500 mb-4">Mulai dengan menambahkan unit aset pertama untuk {{ $inventaris->nama_barang }}.</p>

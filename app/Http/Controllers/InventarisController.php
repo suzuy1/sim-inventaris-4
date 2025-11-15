@@ -362,6 +362,7 @@ class InventarisController extends Controller
             'keterangan' => 'nullable|string',
             'tgl_perbaikan' => 'nullable|date',
             'tgl_pengecekan' => 'nullable|date',
+            'tipe_barang' => 'nullable|string|max:255', // Add tipe_barang validation
         ]);
 
         try {
@@ -423,6 +424,7 @@ class InventarisController extends Controller
             'keterangan' => 'nullable|string',
             'tgl_perbaikan' => 'nullable|date',
             'tgl_pengecekan' => 'nullable|date',
+            'tipe_barang' => 'nullable|string|max:255', // Add tipe_barang validation
         ]);
 
         try {

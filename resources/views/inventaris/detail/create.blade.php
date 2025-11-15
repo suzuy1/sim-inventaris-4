@@ -47,6 +47,16 @@
                             <p class="mt-2 text-xs text-gray-500">Kode unik untuk unit aset ini.</p>
                         </div>
 
+                        <div class="md:col-span-2">
+                            <label for="tipe_barang" class="block text-sm font-semibold leading-6 text-gray-900">Tipe Barang</label>
+                            <div class="mt-2">
+                                <input type="text" name="tipe_barang" id="tipe_barang" value="{{ old('tipe_barang') }}"
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                    placeholder="Contoh: Laptop Asus, Meja Kayu Jati">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Tipe spesifik dari master barang ini (misal: Laptop Asus untuk master Laptop).</p>
+                        </div>
+
                         <div>
                             <label for="kondisi" class="block text-sm font-semibold leading-6 text-gray-900">Kondisi <span class="text-red-600">*</span></label>
                             <div class="mt-2">
