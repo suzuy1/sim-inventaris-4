@@ -157,6 +157,7 @@
                         <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Sumber Dana</th>
                         <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tgl Beli</th>
                         <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Harga Beli</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Keterangan</th>
                         <th scope="col" class="relative py-4 pl-3 pr-6">
                             <span class="sr-only">Aksi</span>
                         </th>
@@ -213,6 +214,9 @@
                             <td class="whitespace-nowrap px-4 py-4 text-sm font-medium text-gray-900">
                                 {{ $detail->harga_beli ? 'Rp ' . number_format($detail->harga_beli, 0, ',', '.') : '-' }}
                             </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                                {{ $detail->keterangan ?? '-' }}
+                            </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                     <a href="{{ route('aset-detail.edit', $detail) }}" 
@@ -240,7 +244,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="px-6 py-12 text-center">
+                            <td colspan="11" class="px-6 py-12 text-center">
                                 <div class="text-center">
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>

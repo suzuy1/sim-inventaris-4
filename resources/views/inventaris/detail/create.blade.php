@@ -37,15 +37,6 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <div class="md:col-span-2">
-                            <label for="kode_inv" class="block text-sm font-semibold leading-6 text-gray-900">Kode Unit <span class="text-red-600">*</span></label>
-                            <div class="mt-2">
-                                <input type="text" name="kode_inv" id="kode_inv" value="{{ old('kode_inv') }}" required
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                    placeholder="Contoh: KRS-FAK-001">
-                            </div>
-                            <p class="mt-2 text-xs text-gray-500">Kode unik untuk unit aset ini.</p>
-                        </div>
 
                         <div class="md:col-span-2">
                             <label for="tipe_barang" class="block text-sm font-semibold leading-6 text-gray-900">Tipe Barang</label>
@@ -76,7 +67,7 @@
                                     class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
                                     <option value="">-- Pilih Sumber Dana --</option>
                                     @foreach($sumberDanas as $sumberDana)
-                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id') == $sumberDana->id) selected @endif>{{ $sumberDana->nama_sumber_dana }}</option>
+                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id') == $sumberDana->id) selected @endif>{{ $sumberDana->kode }} - {{ $sumberDana->nama_sumber_dana }}</option>
                                     @endforeach
                                 </select>
                             </div>

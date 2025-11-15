@@ -323,12 +323,13 @@ class InventarisController extends Controller
         ]);
 
         try {
+            Log::info('Validated Data for AsetDetail:', $validatedData);
 
             // ================================
             // 1. Ambil kode sumber dana
             // ================================
             $sumberDana = SumberDana::find($validatedData['sumber_dana_id']);
-            $kodeSumberDana = $sumberDana->kode_sumber_dana;   // Pastikan kolomnya benar
+            $kodeSumberDana = $sumberDana->kode_sumber_dana; // Mengambil kode singkat (misalnya BOS)
 
             // ==========================================
             // 2. Cari nomor urut terakhir berdasarkan:
