@@ -318,7 +318,7 @@ class InventarisController extends Controller
          
          // Load semua unit/aset detail milik master barang ini
          $inventarisDetails = AsetDetail::where('inventaris_id', $inventaris->id)
-             ->with(['room', 'penanggungJawab']) // Eager load relasi
+             ->with(['room', 'penanggungJawab', 'sumberDana']) // Eager load relasi
              ->paginate(10);
          
          // $namaBarang = $inventaris->nama_barang; (Kita ganti jadi passing objek utuh)

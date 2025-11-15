@@ -62,12 +62,15 @@
                         </div>
 
                         <div>
-                            <label for="sumber_dana" class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana</label>
+                            <label for="sumber_dana_id" class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana</label>
                             <div class="mt-2">
-                                <input type="text" name="sumber_dana" id="sumber_dana" 
-                                       value="{{ old('sumber_dana', $asetDetail->sumber_dana) }}"
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                    placeholder="Contoh: Dana Operasional">
+                                <select name="sumber_dana_id" id="sumber_dana_id"
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                                    <option value="">-- Pilih Sumber Dana --</option>
+                                    @foreach($sumberDanas as $sumberDana)
+                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id', $asetDetail->sumber_dana_id) == $sumberDana->id) selected @endif>{{ $sumberDana->nama_sumber_dana }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 

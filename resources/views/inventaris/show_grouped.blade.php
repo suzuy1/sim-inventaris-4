@@ -49,6 +49,7 @@
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Kondisi</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Lokasi/Ruangan</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">P. Jawab</th>
+                        <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Sumber Dana</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Tgl Beli</th>
                         <th scope="col" class="px-4 py-4 text-left text-sm font-semibold text-gray-900">Harga Beli</th>
                         <th scope="col" class="relative py-4 pl-3 pr-6">
@@ -93,6 +94,9 @@
                                 {{ $detail->penanggungJawab->name ?? '-' }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                                {{ $detail->sumberDana->nama_sumber_dana ?? '-' }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
                                 {{ $detail->tgl_pembelian ? \Carbon\Carbon::parse($detail->tgl_pembelian)->format('d-m-Y') : '-' }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
@@ -116,7 +120,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="whitespace-nowrap px-4 py-12 text-center">
+                            <td colspan="10" class="whitespace-nowrap px-4 py-12 text-center">
                                 <div class="text-gray-500">
                                     <p class="text-lg font-semibold text-gray-900 mb-1">Belum ada unit aset</p>
                                     <p class="text-gray-500 mb-4">Mulai dengan menambahkan unit aset pertama untuk {{ $inventaris->nama_barang }}.</p>
