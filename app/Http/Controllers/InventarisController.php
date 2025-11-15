@@ -296,7 +296,7 @@ private function calculatePercentage($current, $previous)
                 DB::commit();
                 \Log::info('Transaction committed');
                 \Log::info('=== DELETE SUCCESS ===');
-                return redirect()->route('inventaris.index')
+                return redirect()->route('inventaris.index', ['kategori' => $inventaris->kategori])
                                 ->with('success', 'Master barang "' . $inventaris->nama_barang . '" (dan semua unitnya) berhasil dihapus.');
             } else {
                 DB::rollBack();
