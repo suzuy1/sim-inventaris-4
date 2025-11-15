@@ -33,41 +33,85 @@
                         </div>
                     @endif
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('inventaris.create') }}"
-                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                       aria-label="Tambah inventaris baru">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 5a1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Tambah Inventaris
-                    </a>
-                    <button onclick="document.getElementById('importModal').classList.remove('hidden')"
-                            class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                            aria-label="Buka modal impor data inventaris">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                        Impor Data
-                    </button>
-                    <a href="{{ route('inventaris.export') }}"
-                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                       aria-label="Ekspor data inventaris">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        Ekspor Data
-                    </a>
-                    <a href="{{ route('inventaris.print_all') }}"
-                       target="_blank"
-                       class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-gray-600 to-slate-60 px-4 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                       aria-label="Cetak semua data inventaris">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5 4v3H4a2 0 0-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
-                        </svg>
-                        Cetak Semua
-                    </a>
-                </div>
+                
+                <!-- TOMBOL-TOMBOL YANG DIPERBAIKI -->
+               <div class="flex flex-wrap gap-4">
+    <!-- Tombol Tambah Inventaris -->
+    <a href="{{ route('inventaris.create') }}"
+       class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 active:scale-95"
+       aria-label="Tambah inventaris baru">
+        <!-- Shimmer Effect -->
+        <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+        
+        <!-- Icon dengan animasi -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="relative h-5 w-5 transition-transform duration-300 group-hover:rotate-90" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        
+        <span class="relative">Tambah Inventaris</span>
+        
+        <!-- Corner accent -->
+        <div class="absolute right-0 top-0 h-3 w-3 rounded-bl-full bg-white/40 transition-all duration-300 group-hover:bg-white/60"></div>
+    </a>
+
+    <!-- Tombol Impor Data -->
+    <button onclick="document.getElementById('importModal').classList.remove('hidden')"
+            class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/40 active:scale-95"
+            aria-label="Buka modal impor data inventaris">
+        <!-- Shimmer Effect -->
+        <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+        
+        <!-- Icon dengan animasi upload -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="relative h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+        
+        <span class="relative">Impor Data</span>
+        
+        <!-- Badge indicator -->
+        <div class="absolute -right-2 -top-2 flex h-6 w-6">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold">↑</span>
+        </div>
+    </button>
+
+    <!-- Tombol Ekspor Data -->
+    <a href="{{ route('inventaris.export') }}"
+       class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-blue-500/40 active:scale-95"
+       aria-label="Ekspor data inventaris">
+        <!-- Shimmer Effect -->
+        <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+        
+        <!-- Icon dengan animasi download -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="relative h-5 w-5 transition-transform duration-300 group-hover:translate-y-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+        
+        <span class="relative">Ekspor Data</span>
+        
+        <!-- Progress indicator -->
+        <div class="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+    </a>
+
+    <!-- Tombol Cetak Semua -->
+    <a href="{{ route('inventaris.print_all') }}"
+       target="_blank"
+       class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-600 to-gray-700 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-gray-500/40 active:scale-95"
+       aria-label="Cetak semua data inventaris">
+        <!-- Shimmer Effect -->
+        <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"></div>
+        
+        <!-- Icon dengan animasi print -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="relative h-5 w-5 transition-all duration-300 group-hover:scale-110" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+        </svg>
+        
+        <span class="relative">Cetak Semua</span>
+        
+        <!-- Print wave effect -->
+        <div class="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-white/60 to-transparent opacity-0 transition-all duration-300 group-hover:opacity-100"></div>
+    </a>
+</div>
             </div>
         </div>
 
@@ -288,7 +332,6 @@
                                             </svg>
                                             Lihat Detail
                                         </a>
-                                        <!-- PERUBAHAN: onsubmit dipanggil dengan parameter yang lebih lengkap dan ditambahkan data-id -->
                                         <form action="{{ route('inventaris.destroy', $item->id) }}" method="POST"
                                               onsubmit="return confirmDelete('{{ $item->nama_barang }}', {{ $item->id }});"
                                               class="delete-form" data-id="{{ $item->id }}">
@@ -415,9 +458,8 @@
         </div>
     </div>
 
-    <!-- PERUBAHAN: Script yang lebih sederhana dan andal -->
     <script>
-        // Script untuk upload file (tidak berubah)
+        // Script untuk upload file
         document.getElementById('file').addEventListener('change', function(e) {
             const fileName = e.target.files[0]?.name;
             if (fileName) {
@@ -434,8 +476,7 @@
             }
         });
 
-        // FUNGSI DELETE YANG DIPERBAIKI
-        // Fungsi ini meminta konfirmasi dan menambahkan logging untuk debugging
+        // Fungsi konfirmasi delete
         function confirmDelete(itemName, itemId) {
             console.log('Attempting to delete item:', { itemName, itemId });
             
@@ -463,5 +504,4 @@
             });
         });
     </script>
-    <!-- AKHIR PERUBAHAN -->
 @endsection

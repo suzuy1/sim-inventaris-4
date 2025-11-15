@@ -22,7 +22,7 @@ class AsetDetail extends Model
         'kode_inv',
         'tgl_pembelian',
         'harga_beli',
-        'sumber_dana',
+        'sumber_dana_id',
         'kondisi',
         'room_id',
         'penanggung_jawab_id',
@@ -53,5 +53,13 @@ class AsetDetail extends Model
     public function penanggungJawab()
     {
         return $this->belongsTo(User::class, 'penanggung_jawab_id');
+    }
+
+    /**
+     * Relasi: Detail aset ini memiliki satu SumberDana.
+     */
+    public function sumberDana()
+    {
+        return $this->belongsTo(SumberDana::class, 'sumber_dana_id');
     }
 }

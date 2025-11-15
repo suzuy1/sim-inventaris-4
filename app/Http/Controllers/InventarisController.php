@@ -337,9 +337,10 @@ class InventarisController extends Controller
         // Ambil data untuk dropdown
         $rooms = Room::all();
         $users = User::all(); // Nanti bisa difilter misal hanya role tertentu
+        $sumberDanas = SumberDana::all(); // Get all SumberDana for the dropdown
         
         // View ini ('inventaris.detail.create') perlu kita BUAT BARU nanti
-        return view('inventaris.detail.create', compact('inventaris', 'rooms', 'users'));
+        return view('inventaris.detail.create', compact('inventaris', 'rooms', 'users', 'sumberDanas'));
     }
 
     /**
@@ -391,9 +392,10 @@ class InventarisController extends Controller
         // Ambil data untuk dropdown
         $rooms = Room::all();
         $users = User::all();
+        $sumberDanas = SumberDana::all(); // Get all SumberDana for the dropdown
 
         // Load view 'edit.blade.php' yang akan kita buat
-        return view('inventaris.detail.edit', compact('asetDetail', 'rooms', 'users'));
+        return view('inventaris.detail.edit', compact('asetDetail', 'rooms', 'users', 'sumberDanas'));
     }
 
     /**

@@ -52,6 +52,13 @@
                         <span>{{ __('Unit') }}</span>
                     </x-nav-link>
 
+                    <x-nav-link :href="route('sumber_danas.index')" :active="request()->routeIs('sumber_danas.index')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 00-2 2v4a2 2 0 002 2m0-6h4m-4 0H8m0 10v-2m0 2a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-2m0-6h4m-4 0H8"/>
+                        </svg>
+                        <span>{{ __('Sumber Dana') }}</span>
+                    </x-nav-link>
+
                     <!-- More Menu Dropdown -->
                     <div class="relative" x-data="{ moreMenuOpen: false }">
                         <button @click="moreMenuOpen = !moreMenuOpen" class="flex items-center space-x-1 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">
@@ -99,14 +106,10 @@
                                 </svg>
                                 <span>{{ __('Laporan') }}</span>
                             </x-dropdown-link>
+
                         </div>
                     </div>
-                    <x-nav-link :href="route('sumber_danas.index')" :active="request()->routeIs('sumber_danas.index')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 00-2 2v4a2 2 0 002 2m0-6h4m-4 0H8m0 10v-2m0 2a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-2m0-6h4m-4 0H8"/>
-                        </svg>
-                        <span>{{ __('Sumber Dana') }}</span>
-                    </x-nav-link>
+                </div>
                 </div>
             </div>
 
@@ -254,13 +257,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"/>
                 </svg>
                 <span>{{ __('Unit') }}</span>
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('sumber_danas.index')" :active="request()->routeIs('sumber_danas.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 00-2 2v4a2 2 0 002 2m0-6h4m-4 0H8m0 10v-2m0 2a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-2m0-6h4m-4 0H8"/>
-                </svg>
-                <span>{{ __('Sumber Dana') }}</span>
             </x-responsive-nav-link>
         </div>
 

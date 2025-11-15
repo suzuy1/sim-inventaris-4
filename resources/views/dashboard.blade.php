@@ -374,6 +374,7 @@
                         ['route' => 'acquisitions.index', 'label' => 'Akuisisi', 'icon' => 'heroicon-o-arrow-up-circle'],
                         ['route' => 'rooms.index', 'label' => 'Ruangan', 'icon' => 'heroicon-o-building-library'],
                         ['route' => 'units.index', 'label' => 'Unit', 'icon' => 'heroicon-o-squares-2x2'],
+                        ['route' => 'sumber_danas.index', 'label' => 'Sumber Dana', 'icon' => 'heroicon-o-currency-dollar'],
                         ['route' => 'users.index', 'label' => 'Pengguna', 'icon' => 'heroicon-o-users'],
                         ['route' => 'transactions.index', 'label' => 'Transaksi', 'icon' => 'heroicon-o-arrow-path'],
                         ['route' => 'settings.index', 'label' => 'Pengaturan', 'icon' => 'heroicon-o-cog-6-tooth'],
