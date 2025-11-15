@@ -23,45 +23,108 @@ class InventarisController extends Controller
     use AuthorizesRequests;
 
     /**
-     * Display a listing of the resource.
-     * LOGIKA DIUBAH TOTAL: Menampilkan master inventaris + count kondisi dari aset_details
-     */
-    public function index(Request $request)
-    {
-        $this->authorize('viewAny', Inventaris::class);
+ * Display a listing of the resource.
+ * LOGIKA DIUBAH TOTAL: Menampilkan master inventaris + count kondisi dari aset_details
+ */
+public function index(Request $request)
+{
+    $this->authorize('viewAny', Inventaris::class);
 
-        $query = Inventaris::query()
-            // [REVISI] Hapus filter 'habis_pakai'
-            // ->where('kategori', '!=', 'habis_pakai')
-            ->withCount([
-                'asetDetails', // Menghitung total unit
-                'asetDetails as total_baik' => function ($q) {
-                    $q->where('kondisi', 'Baik');
-                },
-                'asetDetails as total_rusak_ringan' => function ($q) {
-                    $q->where('kondisi', 'Rusak Ringan');
-                },
-                'asetDetails as total_rusak_berat' => function ($q) {
-                    $q->where('kondisi', 'Rusak Berat');
-                },
-            ]);
+    $query = Inventaris::query()
+        ->withCount([
+            'asetDetails', // Menghitung total unit
+            'asetDetails as total_baik' => function ($q) {
+                $q->where('kondisi', 'Baik');
+            },
+            'asetDetails as total_rusak_ringan' => function ($q) {
+                $q->where('kondisi', 'Rusak Ringan');
+            },
+            'asetDetails as total_rusak_berat' => function ($q) {
+                $q->where('kondisi', 'Rusak Berat');
+            },
+        ]);
 
-        // [REVISI] Tambahkan filter berdasarkan kategori dari request
-        $kategori = $request->input('kategori');
-        if ($kategori) {
-            $query->where('kategori', $kategori);
-        }
-
-        if ($request->has('search')) {
-            $query->where('nama_barang', 'like', '%' . $request->search . '%');
-        }
-
-        $inventaris = $query->paginate(10);
-
-        // [REVISI] Kirim $kategori (misal "Elektronik" atau null) ke view
-        return view('inventaris.index', compact('inventaris', 'kategori'));
+    // [REVISI] Tambahkan filter berdasarkan kategori dari request
+    $kategori = $request->input('kategori');
+    if ($kategori) {
+        $query->where('kategori', $kategori);
     }
 
+    if ($request->has('search')) {
+        $query->where('nama_barang', 'like', '%' . $request->search . '%');
+    }
+
+    $inventaris = $query->paginate(10);
+
+    // ===================================================================
+    // [BARU] Hitung data untuk persentase real-time (bulan ini vs bulan lalu)
+    // ===================================================================
+    $currentMonth = now()->month;
+    $currentYear = now()->year;
+    $lastMonth = now()->subMonth()->month;
+    $lastMonthYear = now()->subMonth()->year;
+
+    // Query dasar untuk bulan lalu
+    $lastMonthQuery = Inventaris::query();
+    
+    // Filter kategori jika ada
+    if ($kategori) {
+        $lastMonthQuery->where('kategori', $kategori);
+    }
+
+    // Hitung data bulan lalu berdasarkan tanggal pembuatan aset_details
+    $lastMonthStats = $lastMonthQuery
+        ->withCount([
+            'asetDetails as last_month_total_baik' => function ($q) use ($lastMonth, $lastMonthYear) {
+                $q->where('kondisi', 'Baik')
+                  ->whereMonth('created_at', '<=', $lastMonth)
+                  ->whereYear('created_at', '<=', $lastMonthYear);
+            },
+            'asetDetails as last_month_total_rusak_ringan' => function ($q) use ($lastMonth, $lastMonthYear) {
+                $q->where('kondisi', 'Rusak Ringan')
+                  ->whereMonth('created_at', '<=', $lastMonth)
+                  ->whereYear('created_at', '<=', $lastMonthYear);
+            },
+            'asetDetails as last_month_total_rusak_berat' => function ($q) use ($lastMonth, $lastMonthYear) {
+                $q->where('kondisi', 'Rusak Berat')
+                  ->whereMonth('created_at', '<=', $lastMonth)
+                  ->whereYear('created_at', '<=', $lastMonthYear);
+            },
+        ])
+        ->get();
+
+    // Aggregasi data bulan lalu
+    $lastMonthBarangBaik = $lastMonthStats->sum('last_month_total_baik') ?: 1;
+    $lastMonthRusakRingan = $lastMonthStats->sum('last_month_total_rusak_ringan') ?: 1;
+    $lastMonthRusakBerat = $lastMonthStats->sum('last_month_total_rusak_berat') ?: 1;
+    $lastMonthJenisBarang = $lastMonthStats->count() ?: 1;
+
+    // Data bulan ini (dari $inventaris yang sudah ada)
+    $currentBarangBaik = $inventaris->sum('total_baik');
+    $currentRusakRingan = $inventaris->sum('total_rusak_ringan');
+    $currentRusakBerat = $inventaris->sum('total_rusak_berat');
+    $currentJenisBarang = $inventaris->count();
+
+    // Hitung persentase
+    $percentageData = [
+        'barang_baik' => $this->calculatePercentage($currentBarangBaik, $lastMonthBarangBaik),
+        'rusak_ringan' => $this->calculatePercentage($currentRusakRingan, $lastMonthRusakRingan),
+        'rusak_berat' => $this->calculatePercentage($currentRusakBerat, $lastMonthRusakBerat),
+        'jenis_barang' => $this->calculatePercentage($currentJenisBarang, $lastMonthJenisBarang),
+    ];
+
+    // [REVISI] Kirim $kategori dan $percentageData ke view
+    return view('inventaris.index', compact('inventaris', 'kategori', 'percentageData'));
+}
+
+/**
+ * [BARU] Helper function untuk menghitung persentase perubahan
+ */
+private function calculatePercentage($current, $previous)
+{
+    if ($previous == 0) return 0;
+    return round((($current - $previous) / $previous) * 100, 1);
+}
     /**
      * Show the form for creating a new resource.
      * FUNGSI BERUBAH: Menampilkan form untuk membuat MASTER BARANG baru
@@ -96,6 +159,7 @@ class InventarisController extends Controller
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
                 'kategori' => $validatedData['kategori'],
+                'keterangan' => $validatedData['keterangan'] ?? null, // Add keterangan
             ]);
 
             DB::commit();
@@ -145,6 +209,7 @@ class InventarisController extends Controller
         $validatedData = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'kategori' => 'required|string|max:255', // Tidak pakai 'in:' lagi
+            'keterangan' => 'nullable|string', // Add validation for keterangan
         ]);
 
         $inventaris->update($validatedData);
@@ -463,6 +528,19 @@ class InventarisController extends Controller
     }
 
     /**
+     * [BARU] Menampilkan halaman detail untuk satu unit aset.
+     */
+    public function showAsetDetail(AsetDetail $asetDetail)
+    {
+        $this->authorize('view', $asetDetail->inventaris); // Asumsi policy di master inventaris
+
+        // Eager load relasi yang dibutuhkan untuk tampilan detail
+        $asetDetail->load(['inventaris', 'room', 'penanggungJawab', 'sumberDana']);
+
+        return view('inventaris.detail.show', compact('asetDetail'));
+    }
+
+    /**
      * [BARU] Menampilkan halaman untuk memilih jenis inventaris (Elektronik, Furniture, dll.)
      */
     // [REVISI] Method baru untuk menampilkan halaman pilih jenis
@@ -496,15 +574,9 @@ class InventarisController extends Controller
         $kategoriCounts = [];
 
         foreach ($kategoriList as $kategori) {
-            if (in_array($kategori, $habisPakaiKategori)) {
-                // For consumable items, sum the remaining stock
-                $count = Inventaris::where('kategori', $kategori)
-                    ->join('stok_habis_pakais', 'inventaris.id', '=', 'stok_habis_pakais.inventaris_id')
-                    ->sum(DB::raw('stok_habis_pakais.jumlah_masuk - stok_habis_pakais.jumlah_keluar'));
-            } else {
-                // For non-consumable items (assets), count the master inventaris items
-                $count = Inventaris::where('kategori', $kategori)->count();
-            }
+            // For all categories, count the number of master inventaris items
+            // The 'jumlah barang' in this view should represent the number of distinct item types.
+            $count = Inventaris::where('kategori', $kategori)->count();
             $kategoriCounts[$kategori] = $count;
         }
 

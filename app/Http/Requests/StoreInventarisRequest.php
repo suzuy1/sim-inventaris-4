@@ -15,6 +15,18 @@ class StoreInventarisRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('harga_beli')) {
+            $this->merge([
+                'harga_beli' => preg_replace('/[^0-9]/', '', $this->input('harga_beli')),
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -25,6 +37,8 @@ class StoreInventarisRequest extends FormRequest
         $rules = [
             'nama_barang' => 'required|string|max:255',
             'kategori' => 'required|string|max:255', // Dibuat fleksibel
+            'harga_beli' => 'nullable|numeric',
+            'keterangan' => 'nullable|string', // Add validation for keterangan
         ];
 
         return $rules;
@@ -39,6 +53,7 @@ class StoreInventarisRequest extends FormRequest
     {
          return [
              // Pesan kustom yang dihapus
+             'harga_beli.numeric' => 'The harga beli field must be a number.',
          ];
     }
 }

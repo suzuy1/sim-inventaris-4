@@ -25,7 +25,8 @@ class Inventaris extends Model
     protected $fillable = [
         'nama_barang',
         'kategori',
-        'sumber_dana_id', // Add this line
+        'sumber_dana_id',
+        'keterangan', // Add this line
     ];
 
     // Relationships

@@ -69,7 +69,7 @@ File: resources/views/inventaris/pilih-jenis.blade.php (IMPROVED VERSION - LOGO 
                 Kelola Inventaris
             </h1>
             <p class="text-xl lg:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-                Pilih kategori inventaris untuk mengelola aset perusahaan dengan efisien dan real-time insights.
+                Pilih kategori inventaris untuk mengelola aset kampus.
             </p>
         </div>
     </div>

@@ -40,6 +40,7 @@ Route::middleware("auth")->group(function () {
     // Aset Detail Routes
     Route::get("inventaris/{inventaris}/detail/create", [InventarisController::class, "createAsetDetail"])->name("inventaris.detail.create");
     Route::post("inventaris/{inventaris}/detail", [InventarisController::class, "storeAsetDetail"])->name("inventaris.detail.store");
+    Route::get("aset-detail/{asetDetail}", [InventarisController::class, "showAsetDetail"])->name("aset-detail.show");
     Route::get("aset-detail/{asetDetail}/edit", [InventarisController::class, "editAsetDetail"])->name("aset-detail.edit");
     Route::patch("aset-detail/{asetDetail}", [InventarisController::class, "updateAsetDetail"])->name("aset-detail.update");
     Route::delete("aset-detail/{asetDetail}", [InventarisController::class, "destroyAsetDetail"])->name("aset-detail.destroy");

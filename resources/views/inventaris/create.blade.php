@@ -69,6 +69,15 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label for="keterangan" class="block text-sm font-semibold leading-6 text-gray-900">Keterangan</label>
+                            <div class="mt-2">
+                                <textarea name="keterangan" id="keterangan" rows="3"
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                    placeholder="Tambahkan keterangan atau detail tambahan jika diperlukan.">{{ old('keterangan') }}</textarea>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
