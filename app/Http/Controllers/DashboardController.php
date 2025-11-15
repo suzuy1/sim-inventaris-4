@@ -52,4 +52,14 @@ class DashboardController extends Controller
         // In a real application, you would fetch activity log data here.
         return view('dashboard.activity-logs');
     }
+
+    public function getTotalInventoryTypes()
+    {
+        $jenisInventaris = Inventaris::select('jenis_barang')
+            ->selectRaw('COUNT(*) as total_items')
+            ->groupBy('jenis_barang')
+            ->get();
+        
+        return response()->json(['jenisInventaris' => $jenisInventaris]);
+    }
 }

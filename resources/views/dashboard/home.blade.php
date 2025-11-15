@@ -72,7 +72,7 @@
                 <div class="flex-1">
                     <p class="text-xs font-semibold text-gray-500 mb-0.5">Total Inventaris</p>
                     <p class="text-2xl font-bold text-slate-800">{{ $totalInventaris }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Jenis barang berbeda</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Jumlah keseluruhan aset</p>
                 </div>
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-3 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,6 +89,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- Total Jenis Inventaris -->
+        <a href="{{ route('inventaris.pilih_jenis') }}" class="group bg-white rounded-xl shadow-lg border border-gray-200/50 p-4 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <div x-data="{ totalJenisInventaris: '...' }" x-init="fetch('{{ route('dashboard.total_inventory_types') }}')
+                .then(response => response.json())
+                .then(data => totalJenisInventaris = data.totalJenisInventaris)">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-gray-500 mb-0.5">Total Jenis Inventaris</p>
+                        <p class="text-2xl font-bold text-slate-800" x-text="totalJenisInventaris"></p>
+                        <p class="text-xs text-gray-400 mt-0.5">Jenis barang berbeda</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-3 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gray-100">
+                    <div class="flex items-center text-xs font-medium text-blue-600">
+                        <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Kategori unik</span>
+                    </div>
+                </div>
+            </div>
+        </a>
 
         <!-- Jumlah Ruangan -->
         <div class="group bg-white rounded-xl shadow-lg border border-gray-200/50 p-4 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">

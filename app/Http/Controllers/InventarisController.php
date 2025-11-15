@@ -66,11 +66,11 @@ class InventarisController extends Controller
      * Show the form for creating a new resource.
      * FUNGSI BERUBAH: Menampilkan form untuk membuat MASTER BARANG baru
      */
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('create', Inventaris::class);
-        $sumberDanas = SumberDana::all(); // Get all SumberDana for the dropdown
-        return view('inventaris.create', compact('sumberDanas'));
+        $kategori = $request->query('kategori'); // Get the category from the query string
+        return view('inventaris.create', compact('kategori'));
     }
 
     /**
@@ -96,52 +96,7 @@ class InventarisController extends Controller
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
                 'kategori' => $validatedData['kategori'],
-                'sumber_dana_id' => $validatedData['sumber_dana_id'] ?? null, // Add sumber_dana_id
             ]);
-
-            // [REVISI] 2. Logika untuk barang habis pakai
-            if (in_array($validatedData['kategori'], $habisPakaiKategori)) {
-                StokHabisPakai::create([
-                    'inventaris_id' => $inventaris->id,
-                    'jumlah_masuk' => $validatedData['initial_stok'] ?? 0, // Ambil stok awal
-                    'jumlah_keluar' => 0,
-                    'tanggal' => now()->toDateString(),
-                ]);
-            }
-            // [REVISI] 3. Logika untuk barang tidak habis pakai / aset
-            else {
-                $kondisiBaik = $validatedData['kondisi_baik'] ?? 0;
-                $kondisiRusakRingan = $validatedData['kondisi_rusak_ringan'] ?? 0;
-                $kondisiRusakBerat = $validatedData['kondisi_rusak_berat'] ?? 0;
-
-                // Buat AsetDetail untuk kondisi Baik
-                for ($i = 0; $i < $kondisiBaik; $i++) {
-                    AsetDetail::create([
-                        'inventaris_id' => $inventaris->id,
-                        'kondisi' => 'Baik',
-                        // Contoh kode inventaris, bisa disesuaikan lagi nanti
-                        'kode_inv' => $inventaris->id . '-B-' . ($i + 1),
-                    ]);
-                }
-
-                // Buat AsetDetail untuk kondisi Rusak Ringan
-                for ($i = 0; $i < $kondisiRusakRingan; $i++) {
-                    AsetDetail::create([
-                        'inventaris_id' => $inventaris->id,
-                        'kondisi' => 'Rusak Ringan',
-                        'kode_inv' => $inventaris->id . '-RR-' . ($i + 1),
-                    ]);
-                }
-
-                // Buat AsetDetail untuk kondisi Rusak Berat
-                for ($i = 0; $i < $kondisiRusakBerat; $i++) {
-                    AsetDetail::create([
-                        'inventaris_id' => $inventaris->id,
-                        'kondisi' => 'Rusak Berat',
-                        'kode_inv' => $inventaris->id . '-RB-' . ($i + 1),
-                    ]);
-                }
-            }
 
             DB::commit();
 
@@ -174,8 +129,8 @@ class InventarisController extends Controller
     public function edit(Inventaris $inventaris)
     {
         $this->authorize('update', $inventaris);
-        // View ini ('inventaris.edit') perlu kita revisi nanti
-        return view('inventaris.edit', compact('inventaris'));
+        $sumberDanas = SumberDana::all();
+        return view('inventaris.edit', compact('inventaris', 'sumberDanas'));
     }
 
     /**
@@ -321,10 +276,16 @@ class InventarisController extends Controller
              ->with(['room', 'penanggungJawab', 'sumberDana']) // Eager load relasi
              ->paginate(10);
          
-         // $namaBarang = $inventaris->nama_barang; (Kita ganti jadi passing objek utuh)
-         
+         // Ambil statistik ringkas untuk inventaris ini
+         $summaryStatistics = AsetDetail::where('inventaris_id', $inventaris->id)
+             ->selectRaw('COUNT(*) as total_units')
+             ->selectRaw('COUNT(CASE WHEN kondisi = "Baik" THEN 1 END) as total_baik')
+             ->selectRaw('COUNT(CASE WHEN kondisi = "Rusak Ringan" THEN 1 END) as total_rusak_ringan')
+             ->selectRaw('COUNT(CASE WHEN kondisi = "Rusak Berat" THEN 1 END) as total_rusak_berat')
+             ->first();
+
          // View ini ('inventaris.show_grouped') perlu kita ROMBAK TOTAL nanti
-         return view('inventaris.show_grouped', compact('inventaris', 'inventarisDetails'));
+         return view('inventaris.show_grouped', compact('inventaris', 'inventarisDetails', 'summaryStatistics'));
     }
 
     /**
@@ -343,38 +304,69 @@ class InventarisController extends Controller
         return view('inventaris.detail.create', compact('inventaris', 'rooms', 'users', 'sumberDanas'));
     }
 
-    /**
-     * [BARU] Menyimpan unit aset baru ke database (Permintaan Dosen)
-     */
     public function storeAsetDetail(Request $request, Inventaris $inventaris)
     {
         $this->authorize('create', Inventaris::class);
 
-        // Validasi untuk form detail aset
+        // Validasi
         $validatedData = $request->validate([
-            'kode_inv' => 'required|string|max:255|unique:aset_details,kode_inv',
             'tgl_pembelian' => 'nullable|date',
             'harga_beli' => 'nullable|numeric|min:0',
-            'sumber_dana_id' => 'nullable|exists:sumber_danas,id', // Change to foreign key
+            'sumber_dana_id' => 'required|exists:sumber_danas,id',
             'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
             'room_id' => 'nullable|exists:rooms,id',
             'penanggung_jawab_id' => 'nullable|exists:users,id',
             'keterangan' => 'nullable|string',
             'tgl_perbaikan' => 'nullable|date',
             'tgl_pengecekan' => 'nullable|date',
-            'tipe_barang' => 'nullable|string|max:255', // Add tipe_barang validation
+            'tipe_barang' => 'nullable|string|max:255',
         ]);
 
         try {
-            // Tambahkan inventaris_id dan simpan
+
+            // ================================
+            // 1. Ambil kode sumber dana
+            // ================================
+            $sumberDana = SumberDana::find($validatedData['sumber_dana_id']);
+            $kodeSumberDana = $sumberDana->kode_sumber_dana;   // Pastikan kolomnya benar
+
+            // ==========================================
+            // 2. Cari nomor urut terakhir berdasarkan:
+            // inventaris_id + sumber dana
+            // ==========================================
+            $last = AsetDetail::where('inventaris_id', $inventaris->id)
+                    ->where('sumber_dana_id', $validatedData['sumber_dana_id'])
+                    ->orderBy('id', 'DESC')
+                    ->first();
+
+            if ($last) {
+                // Ambil nomor urut terakhir dari kode_inv lama
+                // Format: INV/BOS/12/003 → ambil "003"
+                $lastNumber = intval(substr($last->kode_inv, strrpos($last->kode_inv, '/') + 1));
+                $nextNumber = $lastNumber + 1;
+            } else {
+                $nextNumber = 1;
+            }
+
+            // nomor urut 3 digit
+            $noUrut = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+            // ==========================================
+            // 3. Generate kode inventaris otomatis
+            // ==========================================
+            $kodeInv = "INV/{$kodeSumberDana}/{$inventaris->id}/{$noUrut}";
+
+            // ==========================================
+            // 4. Simpan data
+            // ==========================================
             $dataToCreate = $validatedData;
             $dataToCreate['inventaris_id'] = $inventaris->id;
-            
+            $dataToCreate['kode_inv'] = $kodeInv;
+
             AsetDetail::create($dataToCreate);
 
-            // Redirect kembali ke halaman daftar unit
             return redirect()->route('inventaris.show_grouped', $inventaris)
-                             ->with('success', 'Unit aset baru ('.$validatedData['kode_inv'].') berhasil ditambahkan.');
+                    ->with('success', "Unit aset baru ($kodeInv) berhasil ditambahkan.");
 
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan unit aset: ' . $e->getMessage());

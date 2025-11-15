@@ -23,7 +23,8 @@
             
             <form action="{{ route('aset-detail.update', $asetDetail) }}" method="POST">
                 @csrf
-                @method('PATCH') <div class="p-6 lg:p-8">
+                @method('PATCH') 
+                <div class="p-6 lg:p-8">
                     
                     @if ($errors->any())
                         <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
@@ -108,6 +109,17 @@
                         </div>
 
                         <div>
+                            <label for="tipe_barang" class="block text-sm font-semibold leading-6 text-gray-900">Tipe Barang</label>
+                            <div class="mt-2">
+                                <input type="text" name="tipe_barang" id="tipe_barang"
+                                       value="{{ old('tipe_barang', $asetDetail->tipe_barang) }}"
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                    placeholder="Contoh: Laptop, Meja, Kursi">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Jenis spesifik dari barang ini (misal: Laptop Gaming, Meja Kayu).</p>
+                        </div>
+
+                        <div>
                             <label for="penanggung_jawab_id" class="block text-sm font-semibold leading-6 text-gray-900">Penanggung Jawab</label>
                             <div class="mt-2">
                                 <select name="penanggung_jawab_id" id="penanggung_jawab_id"
@@ -129,7 +141,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> <!-- Closing tag for <div class="p-6 lg:p-8"> -->
 
                 <div class="bg-gray-50/80 backdrop-blur-sm px-6 py-4 flex items-center justify-end gap-3">
                     <a href="{{ route('inventaris.show_grouped', $asetDetail->inventaris) }}" 

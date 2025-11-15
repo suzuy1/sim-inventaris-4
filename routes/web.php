@@ -21,6 +21,7 @@ Route::post("/login",[LoginController::class,"store"])->name("login.post");
 
 Route::middleware("auth")->group(function () {
     Route::get("/dashboard",[DashboardController::class,"index"])->name("dashboard");
+    Route::get("/dashboard/total-inventory-types",[DashboardController::class,"getTotalInventoryTypes"])->name("dashboard.total_inventory_types");
     Route::post("/logout",[LoginController::class,"logout"])->name("logout");
 
     Route::get("/inventaris/pilih-jenis", [InventarisController::class, "pilihJenis"])->name("inventaris.pilih_jenis");
@@ -32,6 +33,10 @@ Route::middleware("auth")->group(function () {
     Route::get("inventaris/export",[InventarisController::class,"export"])->name("inventaris.export");
     Route::get("inventaris/grouped/{inventaris}",[InventarisController::class,"showGrouped"])->name("inventaris.show_grouped");
     
+    // Custom Inventaris Edit/Update Routes (for master data only)
+    Route::get("/inventaris/{inventaris}/edit", [InventarisController::class, "edit"])->name("inventaris.edit");
+    Route::put("/inventaris/{inventaris}", [InventarisController::class, "update"])->name("inventaris.update");
+
     // Aset Detail Routes
     Route::get("inventaris/{inventaris}/detail/create", [InventarisController::class, "createAsetDetail"])->name("inventaris.detail.create");
     Route::post("inventaris/{inventaris}/detail", [InventarisController::class, "storeAsetDetail"])->name("inventaris.detail.store");

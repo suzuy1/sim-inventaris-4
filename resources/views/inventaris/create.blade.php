@@ -69,61 +69,11 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label for="sumber_dana_id" class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana <span class="text-red-600">*</span></label>
-                            <div class="mt-2">
-                                <select name="sumber_dana_id" id="sumber_dana_id" required
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
-                                    <option value="">-- Pilih Sumber Dana --</option>
-                                    @foreach($sumberDanas as $sumberDana)
-                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id') == $sumberDana->id) selected @endif>{{ $sumberDana->nama_sumber_dana }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div id="stok-awal-wrapper" class="hidden">
-                            <label for="initial_stok" class="block text-sm font-semibold leading-6 text-gray-900">Stok Awal <span class="text-red-600">*</span></label>
-                            <div class="mt-2">
-                                <input type="number" name="initial_stok" id="initial_stok" value="{{ old('initial_stok', 0) }}"
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                    placeholder="0">
-                            </div>
-                            <p class="mt-2 text-xs text-gray-500">Hanya diisi untuk barang 'Habis Pakai'.</p>
-                        </div>
-
-                        <div id="kondisi-wrapper" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <label for="kondisi_baik" class="block text-sm font-semibold leading-6 text-gray-900">Jumlah Kondisi Baik <span class="text-red-600">*</span></label>
-                                <div class="mt-2">
-                                    <input type="number" name="kondisi_baik" id="kondisi_baik" value="{{ old('kondisi_baik', 0) }}" min="0"
-                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                        placeholder="0">
-                                </div>
-                            </div>
-                            <div>
-                                <label for="kondisi_rusak_ringan" class="block text-sm font-semibold leading-6 text-gray-900">Jumlah Rusak Ringan <span class="text-red-600">*</span></label>
-                                <div class="mt-2">
-                                    <input type="number" name="kondisi_rusak_ringan" id="kondisi_rusak_ringan" value="{{ old('kondisi_rusak_ringan', 0) }}" min="0"
-                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                        placeholder="0">
-                                </div>
-                            </div>
-                            <div>
-                                <label for="kondisi_rusak_berat" class="block text-sm font-semibold leading-6 text-gray-900">Jumlah Rusak Berat <span class="text-red-600">*</span></label>
-                                <div class="mt-2">
-                                    <input type="number" name="kondisi_rusak_berat" id="kondisi_rusak_berat" value="{{ old('kondisi_rusak_berat', 0) }}" min="0"
-                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                        placeholder="0">
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
                 <div class="bg-gray-50/80 backdrop-blur-sm px-6 py-4 flex items-center justify-end gap-3">
-                    <a href="{{ route('inventaris.index') }}" 
+                    <a href="{{ route('inventaris.index', ['kategori' => $kategori]) }}" 
                        class="rounded-lg bg-gradient-to-r from-gray-200 to-slate-200 px-6 py-3 text-sm font-semibold text-gray-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                         Batal
                     </a>
@@ -136,66 +86,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const kategoriSelect = document.getElementById('kategori');
-        const stokAwalWrapper = document.getElementById('stok-awal-wrapper');
-        const stokAwalInput = document.getElementById('initial_stok');
-        const kondisiWrapper = document.getElementById('kondisi-wrapper');
-        const kondisiBaikInput = document.getElementById('kondisi_baik');
-        const kondisiRusakRinganInput = document.getElementById('kondisi_rusak_ringan');
-        const kondisiRusakBeratInput = document.getElementById('kondisi_rusak_berat');
-
-        function toggleFields(kategori) {
-            // Daftar kategori yang dianggap sebagai barang habis pakai
-            const habisPakaiKategori = [
-                'Barang Habis Pakai Medis',
-                'Barang Habis Pakai Kebersihan', 
-                'Barang Habis Pakai ATK',
-                'Obat'
-            ];
-            
-            // Daftar kategori yang dianggap sebagai barang tidak habis pakai
-            const tidakHabisPakaiKategori = [
-                'Elektronik',
-                'Furniture',
-                'Kendaraan',
-                'Alat Tulis Kantor',
-                'Peralatan Listrik',
-                'Peralatan Kebersihan',
-                'Peralatan Dapur',
-                'Peralatan Medis',
-                'Peralatan Teknologi'
-            ];
-            
-            if (habisPakaiKategori.includes(kategori)) {
-                stokAwalWrapper.classList.remove('hidden');
-                stokAwalInput.required = true;
-                kondisiWrapper.classList.add('hidden');
-                kondisiBaikInput.required = false;
-                kondisiRusakRinganInput.required = false;
-                kondisiRusakBeratInput.required = false;
-            } else if (tidakHabisPakaiKategori.includes(kategori)) {
-                stokAwalWrapper.classList.add('hidden');
-                stokAwalInput.required = false;
-                kondisiWrapper.classList.remove('hidden');
-                kondisiBaikInput.required = true;
-                kondisiRusakRinganInput.required = true;
-                kondisiRusakBeratInput.required = true;
-            } else {
-                stokAwalWrapper.classList.add('hidden');
-                stokAwalInput.required = false;
-                kondisiWrapper.classList.add('hidden');
-                kondisiBaikInput.required = false;
-                kondisiRusakRinganInput.required = false;
-                kondisiRusakBeratInput.required = false;
-            }
-        }
-        toggleFields(kategoriSelect.value);
-        kategoriSelect.addEventListener('change', function(e) {
-            toggleFields(e.target.value);
-        });
-    });
-</script>
 @endsection

@@ -37,7 +37,7 @@
                 <!-- TOMBOL-TOMBOL YANG DIPERBAIKI -->
                <div class="flex flex-wrap gap-4">
     <!-- Tombol Tambah Inventaris -->
-    <a href="{{ route('inventaris.create') }}"
+    <a href="{{ route('inventaris.create', ['kategori' => request('kategori')]) }}"
        class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40 active:scale-95"
        aria-label="Tambah inventaris baru">
         <!-- Shimmer Effect -->
@@ -323,6 +323,14 @@
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium">
                                     <div class="flex items-center justify-end gap-x-4">
+                                        <a href="{{ route('inventaris.edit', $item->id) }}"
+                                           class="inline-flex items-center text-blue-600 hover:text-blue-800 group-hover:scale-105 transition-all duration-200 font-semibold"
+                                           aria-label="Edit {{ $item->nama_barang }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-7.657 7.657a1 1 0 01-.328.217l-4 1a1 1 0 01-1.217-1.217l1-4a1 1 0 01.217-.328l7.657-7.657zM15 6l-2-2 4 4-2 2-2-2z" />
+                                            </svg>
+                                            Edit
+                                        </a>
                                         <a href="{{ route('inventaris.show_grouped', $item) }}"
                                            class="inline-flex items-center text-indigo-600 hover:text-indigo-800 group-hover:scale-105 transition-all duration-200 font-semibold"
                                            aria-label="Lihat detail {{ $item->nama_barang }}">
