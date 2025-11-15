@@ -8,6 +8,7 @@ use App\Models\AsetDetail; // Model detail unit (BARU)
 use App\Models\Room;
 use App\Models\User; // (BARU) Untuk penanggung jawab
 use App\Models\StokHabisPakai;
+use App\Models\SumberDana; // Import SumberDana model
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\InventarisExport;
 use App\Imports\InventarisImport;
@@ -68,8 +69,8 @@ class InventarisController extends Controller
     public function create()
     {
         $this->authorize('create', Inventaris::class);
-        // View ini ('inventaris.create') perlu kita revisi nanti
-        return view('inventaris.create');
+        $sumberDanas = SumberDana::all(); // Get all SumberDana for the dropdown
+        return view('inventaris.create', compact('sumberDanas'));
     }
 
     /**
@@ -95,6 +96,7 @@ class InventarisController extends Controller
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
                 'kategori' => $validatedData['kategori'],
+                'sumber_dana_id' => $validatedData['sumber_dana_id'] ?? null, // Add sumber_dana_id
             ]);
 
             // [REVISI] 2. Logika untuk barang habis pakai
@@ -352,7 +354,7 @@ class InventarisController extends Controller
             'kode_inv' => 'required|string|max:255|unique:aset_details,kode_inv',
             'tgl_pembelian' => 'nullable|date',
             'harga_beli' => 'nullable|numeric|min:0',
-            'sumber_dana' => 'nullable|string|max:255',
+            'sumber_dana_id' => 'nullable|exists:sumber_danas,id', // Change to foreign key
             'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
             'room_id' => 'nullable|exists:rooms,id',
             'penanggung_jawab_id' => 'nullable|exists:users,id',
@@ -412,7 +414,7 @@ class InventarisController extends Controller
             ],
             'tgl_pembelian' => 'nullable|date',
             'harga_beli' => 'nullable|numeric|min:0',
-            'sumber_dana' => 'nullable|string|max:255',
+            'sumber_dana_id' => 'nullable|exists:sumber_danas,id', // Change to foreign key
             'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
             'room_id' => 'nullable|exists:rooms,id',
             'penanggung_jawab_id' => 'nullable|exists:users,id',
@@ -475,19 +477,41 @@ class InventarisController extends Controller
             'Elektronik',
             'Furniture',
             'Kendaraan',
-            'Alat Tulis Kantor', // Ini Kategori Aset
+            'Alat Tulis Kantor',
             'Peralatan Listrik',
-            'Peralatan Kebersihan', // Ini Kategori Aset
+            'Peralatan Kebersihan',
             'Peralatan Dapur',
-            'Peralatan Medis', // Ini Kategori Aset
+            'Peralatan Medis',
             'Peralatan Teknologi',
-            'Barang Habis Pakai Medis', // Ini Kategori Habis Pakai
-            'Barang Habis Pakai Kebersihan', // Ini Kategori Habis Pakai
-            'Barang Habis Pakai ATK', // Ini Kategori Habis Pakai
-            'Obat', // Ini Kategori Habis Pakai
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat',
         ];
 
-        return view('inventaris.pilih-jenis', compact('kategoriList'));
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+
+        $kategoriCounts = [];
+
+        foreach ($kategoriList as $kategori) {
+            if (in_array($kategori, $habisPakaiKategori)) {
+                // For consumable items, sum the remaining stock
+                $count = Inventaris::where('kategori', $kategori)
+                    ->join('stok_habis_pakais', 'inventaris.id', '=', 'stok_habis_pakais.inventaris_id')
+                    ->sum(DB::raw('stok_habis_pakais.jumlah_masuk - stok_habis_pakais.jumlah_keluar'));
+            } else {
+                // For non-consumable items (assets), count the master inventaris items
+                $count = Inventaris::where('kategori', $kategori)->count();
+            }
+            $kategoriCounts[$kategori] = $count;
+        }
+
+        return view('inventaris.pilih-jenis', compact('kategoriList', 'kategoriCounts'));
     }
 
 

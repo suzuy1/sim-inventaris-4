@@ -25,6 +25,7 @@ class Inventaris extends Model
     protected $fillable = [
         'nama_barang',
         'kategori',
+        'sumber_dana_id', // Add this line
     ];
 
     // Relationships
@@ -61,6 +62,14 @@ class Inventaris extends Model
     {
         // Pastikan foreign key di tabel acquisitions adalah 'inventaris_id'
         return $this->hasMany(Acquisition::class, 'inventaris_id', 'id'); 
+    }
+
+    /**
+     * Relasi: Inventaris memiliki satu SumberDana
+     */
+    public function sumberDana()
+    {
+        return $this->belongsTo(SumberDana::class);
     }
 
     // Relasi public function unit() KITA HAPUS karena kolom unit_id sudah tidak ada

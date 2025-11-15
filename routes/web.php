@@ -13,6 +13,7 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StokHabisPakaiController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SumberDanaController;
 
 Route::get("/",[LoginController::class,"index"])->name("login");
 Route::get("/login",[LoginController::class,"index"])->name("login.get");
@@ -49,6 +50,7 @@ Route::middleware("auth")->group(function () {
     Route::resource("units", UnitController::class);
     Route::resource("transactions", TransactionController::class)->except(["edit","update"]);
     Route::resource("requests", RequestController::class);
+    Route::resource("sumber_danas", SumberDanaController::class);
 
     // Settings & Profile Routes
     Route::get("/settings",[SettingsController::class,"index"])->name("settings.index");

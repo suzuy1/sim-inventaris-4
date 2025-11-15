@@ -69,6 +69,19 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label for="sumber_dana_id" class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana <span class="text-red-600">*</span></label>
+                            <div class="mt-2">
+                                <select name="sumber_dana_id" id="sumber_dana_id" required
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                                    <option value="">-- Pilih Sumber Dana --</option>
+                                    @foreach($sumberDanas as $sumberDana)
+                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id') == $sumberDana->id) selected @endif>{{ $sumberDana->nama_sumber_dana }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div id="stok-awal-wrapper" class="hidden">
                             <label for="initial_stok" class="block text-sm font-semibold leading-6 text-gray-900">Stok Awal <span class="text-red-600">*</span></label>
                             <div class="mt-2">

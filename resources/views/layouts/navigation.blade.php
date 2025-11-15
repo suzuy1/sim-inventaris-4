@@ -16,7 +16,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden lg:flex items-center space-x-1 ml-10">
+                <div class="hidden lg:flex items-center space-x-1 ml-10 overflow-y-auto max-h-[calc(100vh-4rem)]">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -24,7 +24,7 @@
                         <span>{{ __('Dashboard') }}</span>
                     </x-nav-link>
 
-                    <x-nav-link :href="route('inventaris.index')" :active="request()->routeIs('inventaris.index')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
+                    <x-nav-link :href="route('inventaris.pilih_jenis')" :active="request()->routeIs('inventaris.pilih_jenis') || request()->routeIs('inventaris.index')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m8-8V4a1 1 0 00-1-1h-2a1 1 0 00-1 1v1M9 7h6"/>
                         </svg>
@@ -101,6 +101,12 @@
                             </x-dropdown-link>
                         </div>
                     </div>
+                    <x-nav-link :href="route('sumber_danas.index')" :active="request()->routeIs('sumber_danas.index')" class="flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 00-2 2v4a2 2 0 002 2m0-6h4m-4 0H8m0 10v-2m0 2a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-2m0-6h4m-4 0H8"/>
+                        </svg>
+                        <span>{{ __('Sumber Dana') }}</span>
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -211,7 +217,7 @@
     </div>
 
     <!-- Mobile Navigation Menu -->
-    <div class="lg:hidden border-t border-gray-200 bg-white block">
+    <div class="lg:hidden border-t border-gray-200 bg-white block overflow-y-auto max-h-[calc(100vh-4rem)]">
         <div class="px-4 py-3 space-y-1">
             <!-- Mobile Navigation Links -->
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
@@ -221,7 +227,7 @@
                 <span>{{ __('Dashboard') }}</span>
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('inventaris.index')" :active="request()->routeIs('inventaris.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
+            <x-responsive-nav-link :href="route('inventaris.pilih_jenis')" :active="request()->routeIs('inventaris.pilih_jenis') || request()->routeIs('inventaris.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m8-8V4a1 1 0 00-1-1h-2a1 1 0 00-1 1v1M9 7h6"/>
                 </svg>
@@ -236,7 +242,26 @@
                 <span>{{ __('Pengadaan') }}</span>
             </x-responsive-nav-link>
 
-            <!-- Add the rest of the mobile links following the same pattern -->
+            <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>{{ __('Ruangan') }}</span>
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('units.index')" :active="request()->routeIs('units.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+                </svg>
+                <span>{{ __('Unit') }}</span>
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('sumber_danas.index')" :active="request()->routeIs('sumber_danas.index')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 00-2 2v4a2 2 0 002 2m0-6h4m-4 0H8m0 10v-2m0 2a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-2m0-6h4m-4 0H8"/>
+                </svg>
+                <span>{{ __('Sumber Dana') }}</span>
+            </x-responsive-nav-link>
         </div>
 
         <!-- Mobile User Menu -->
