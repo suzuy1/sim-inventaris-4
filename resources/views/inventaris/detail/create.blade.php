@@ -2,19 +2,16 @@
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6 lg:p-8">
-    <!-- Header Section -->
     <div class="max-w-5xl mx-auto mb-8">
-        <!-- Back Button -->
         <a href="{{ route('inventaris.show_grouped', $inventaris) }}" 
-           class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors duration-200 group mb-6">
+            class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors duration-200 group mb-6">
             <svg class="h-5 w-5 transform group-hover:-translate-x-1 transition-transform duration-200" 
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Kembali ke Detail Aset</span>
         </a>
 
-        <!-- Page Title -->
         <div class="space-y-2">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
                 Tambah Unit Aset Baru
@@ -28,17 +25,14 @@
         </div>
     </div>
 
-    <!-- Main Form Card -->
     <div class="max-w-5xl mx-auto">
         <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             
             <form action="{{ route('inventaris.detail.store', $inventaris) }}" method="POST" class="relative">
                 @csrf
                 
-                <!-- Form Content -->
                 <div class="p-8 lg:p-10 space-y-8">
 
-                    <!-- Error Messages -->
                     @if ($errors->any())
                         <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-5 shadow-sm" role="alert">
                             <div class="flex items-start gap-3">
@@ -62,7 +56,6 @@
                         </div>
                     @endif
 
-                    <!-- Section 1: Informasi Dasar -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <div class="p-2 bg-indigo-100 rounded-lg">
@@ -73,7 +66,6 @@
                             <h2 class="text-lg font-semibold text-gray-900">Informasi Dasar</h2>
                         </div>
 
-                        <!-- Tipe Barang -->
                         <div class="space-y-2">
                             <label for="tipe_barang" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                 <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -82,11 +74,11 @@
                                 Tipe Barang
                             </label>
                             <input type="text" 
-                                   name="tipe_barang" 
-                                   id="tipe_barang" 
-                                   value="{{ old('tipe_barang') }}"
-                                   class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 placeholder-gray-400 transition-all duration-200"
-                                   placeholder="Contoh: Laptop Asus ROG, Meja Kayu Jati">
+                                    name="tipe_barang" 
+                                    id="tipe_barang" 
+                                    value="{{ old('tipe_barang') }}"
+                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 placeholder-gray-400 transition-all duration-200"
+                                    placeholder="Contoh: Laptop Asus ROG, Meja Kayu Jati">
                             <p class="flex items-start gap-1.5 text-xs text-gray-500">
                                 <svg class="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -95,7 +87,6 @@
                             </p>
                         </div>
 
-                        <!-- Kondisi -->
                         <div class="space-y-2">
                             <label for="kondisi" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                 <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -105,9 +96,9 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <select name="kondisi" 
-                                    id="kondisi" 
-                                    required
-                                    class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                        id="kondisi" 
+                                        required
+                                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                                 <option value="Baik" @if(old('kondisi') == 'Baik') selected @endif>
                                     ✓ Baik - Berfungsi dengan sempurna
                                 </option>
@@ -121,7 +112,6 @@
                         </div>
                     </div>
 
-                    <!-- Section 2: Pembelian & Keuangan -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <div class="p-2 bg-emerald-100 rounded-lg">
@@ -133,7 +123,6 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Sumber Dana -->
                             <div class="space-y-2">
                                 <label for="sumber_dana_id" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -142,8 +131,8 @@
                                     Sumber Dana
                                 </label>
                                 <select name="sumber_dana_id" 
-                                        id="sumber_dana_id"
-                                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                            id="sumber_dana_id"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                                     <option value="">Pilih Sumber Dana</option>
                                     @foreach($sumberDanas as $sumberDana)
                                         <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id') == $sumberDana->id) selected @endif>
@@ -153,7 +142,6 @@
                                 </select>
                             </div>
 
-                            <!-- Tanggal Pembelian -->
                             <div class="space-y-2">
                                 <label for="tgl_pembelian" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -162,13 +150,12 @@
                                     Tanggal Pembelian
                                 </label>
                                 <input type="date" 
-                                       name="tgl_pembelian" 
-                                       id="tgl_pembelian" 
-                                       value="{{ old('tgl_pembelian') }}"
-                                       class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                            name="tgl_pembelian" 
+                                            id="tgl_pembelian" 
+                                            value="{{ old('tgl_pembelian') }}"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                             </div>
 
-                            <!-- Harga Beli -->
                             <div class="space-y-2 md:col-span-2">
                                 <label for="harga_beli" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -181,18 +168,17 @@
                                         <span class="text-gray-500 font-medium">Rp</span>
                                     </div>
                                     <input type="number" 
-                                           name="harga_beli" 
-                                           id="harga_beli" 
-                                           value="{{ old('harga_beli') }}"
-                                           class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 pl-12 pr-4 text-gray-900 placeholder-gray-400 transition-all duration-200"
-                                           placeholder="5.000.000"
-                                           step="1000">
+                                            name="harga_beli" 
+                                            id="harga_beli" 
+                                            value="{{ old('harga_beli') }}"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 pl-12 pr-4 text-gray-900 placeholder-gray-400 transition-all duration-200"
+                                            placeholder="5.000.000"
+                                            step="1000">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Section 3: Lokasi & Pengelolaan -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <div class="p-2 bg-purple-100 rounded-lg">
@@ -205,7 +191,6 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Ruangan / Lokasi -->
                             <div class="space-y-2">
                                 <label for="room_id" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -214,8 +199,8 @@
                                     Ruangan / Lokasi
                                 </label>
                                 <select name="room_id" 
-                                        id="room_id"
-                                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                            id="room_id"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                                     <option value="">Pilih Ruangan</option>
                                     @foreach($rooms as $room)
                                         <option value="{{ $room->id }}" @if(old('room_id') == $room->id) selected @endif>
@@ -225,7 +210,6 @@
                                 </select>
                             </div>
 
-                            <!-- Penanggung Jawab -->
                             <div class="space-y-2">
                                 <label for="penanggung_jawab_id" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                     <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -234,8 +218,8 @@
                                     Penanggung Jawab
                                 </label>
                                 <select name="penanggung_jawab_id" 
-                                        id="penanggung_jawab_id"
-                                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                            id="penanggung_jawab_id"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                                     <option value="">Pilih Penanggung Jawab</option>
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}" @if(old('penanggung_jawab_id') == $user->id) selected @endif>
@@ -247,7 +231,6 @@
                         </div>
                     </div>
 
-                    <!-- Section 4: Keterangan Tambahan -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <div class="p-2 bg-amber-100 rounded-lg">
@@ -255,10 +238,44 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h2 class="text-lg font-semibold text-gray-900">Keterangan Tambahan</h2>
+                            <h2 class="text-lg font-semibold text-gray-900">Riwayat & Keterangan Tambahan</h2>
                         </div>
+                        
+                        {{-- START NEW FIELDS FOR TANGGAL --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="tgl_perbaikan" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.608 3.292 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Tanggal Perbaikan Terakhir
+                                </label>
+                                <input type="date" 
+                                            name="tgl_perbaikan" 
+                                            id="tgl_perbaikan" 
+                                            value="{{ old('tgl_perbaikan') }}"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Opsional: Tanggal terakhir unit ini diperbaiki.</p>
+                            </div>
 
-                        <!-- Keterangan -->
+                            <div class="space-y-2">
+                                <label for="tgl_pengecekan" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                    </svg>
+                                    Tanggal Pengecekan Terakhir
+                                </label>
+                                <input type="date" 
+                                            name="tgl_pengecekan" 
+                                            id="tgl_pengecekan" 
+                                            value="{{ old('tgl_pengecekan') }}"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Opsional: Tanggal terakhir unit ini dicek/diverifikasi.</p>
+                            </div>
+                        </div>
+                        {{-- END NEW FIELDS FOR TANGGAL --}}
+
                         <div class="space-y-2">
                             <label for="keterangan" class="flex items-center gap-2 text-sm font-semibold text-gray-900">
                                 <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -267,10 +284,10 @@
                                 Keterangan
                             </label>
                             <textarea name="keterangan" 
-                                      id="keterangan" 
-                                      rows="4"
-                                      class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 placeholder-gray-400 transition-all duration-200 resize-none"
-                                      placeholder="Tambahkan catatan penting, riwayat perbaikan, atau informasi tambahan lainnya...">{{ old('keterangan') }}</textarea>
+                                            id="keterangan" 
+                                            rows="4"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 placeholder-gray-400 transition-all duration-200 resize-none"
+                                            placeholder="Tambahkan catatan penting, riwayat perbaikan, atau informasi tambahan lainnya...">{{ old('keterangan') }}</textarea>
                             <p class="flex items-start gap-1.5 text-xs text-gray-500">
                                 <svg class="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -281,7 +298,6 @@
                     </div>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="bg-gray-50 px-8 py-6 border-t border-gray-200 flex items-center justify-between flex-wrap gap-4">
                     <div class="flex items-start gap-2 text-xs text-gray-500 max-w-md">
                         <svg class="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -292,7 +308,7 @@
                     
                     <div class="flex items-center gap-3">
                         <a href="{{ route('inventaris.show_grouped', $inventaris) }}" 
-                           class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm">
+                            class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -311,7 +327,6 @@
             </form>
         </div>
 
-        <!-- Additional Info Card -->
         <div class="mt-6 bg-blue-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
             <div class="flex gap-4">
                 <div class="flex-shrink-0">
@@ -345,7 +360,6 @@
     </div>
 </div>
 
-<!-- Custom Styles -->
 <style>
     /* Smooth transitions for all interactive elements */
     input[type="text"],
@@ -436,7 +450,6 @@
     }
 </style>
 
-<!-- Optional: JavaScript for enhanced interactions -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Format currency input

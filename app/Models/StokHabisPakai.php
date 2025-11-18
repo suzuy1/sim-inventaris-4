@@ -11,6 +11,10 @@ class StokHabisPakai extends Model
         'jumlah_masuk',
         'jumlah_keluar',
         'tanggal',
+        'satuan',
+        'tgl_kadaluarsa',
+        'tgl_pengecekan',
+        'keterangan',
     ];
 
     // Relationships

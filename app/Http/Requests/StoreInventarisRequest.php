@@ -34,12 +34,28 @@ class StoreInventarisRequest extends FormRequest
     public function rules(): array
     {
         // [REVISI] Kita buat logikanya di sini
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+
         $rules = [
             'nama_barang' => 'required|string|max:255',
-            'kategori' => 'required|string|max:255', // Dibuat fleksibel
-            'harga_beli' => 'nullable|numeric',
-            'keterangan' => 'nullable|string', // Add validation for keterangan
+            'kategori' => 'required|string|max:255',
+            'harga_beli' => 'nullable|numeric', // This field is not used for master inventaris, but kept for compatibility if needed elsewhere.
+            'keterangan' => 'nullable|string', // Keterangan for Inventaris master
         ];
+
+        // Add conditional rules for consumable items
+        if (in_array($this->kategori, $habisPakaiKategori)) {
+            $rules['stock'] = 'required|integer|min:0';
+            $rules['satuan'] = 'required|string|max:255';
+            $rules['tgl_kadaluarsa'] = 'nullable|date';
+            $rules['tgl_pengecekan'] = 'nullable|date';
+            $rules['stok_keterangan'] = 'nullable|string'; // Keterangan for StokHabisPakai
+        }
 
         return $rules;
     }

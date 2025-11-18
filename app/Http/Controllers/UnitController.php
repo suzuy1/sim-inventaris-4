@@ -53,6 +53,7 @@ class UnitController extends Controller
     public function show(Unit $unit)
     {
         $this->authorize('view', $unit); // Proteksi
+        $unit->load('rooms'); // Eager load rooms
         return view('units.show', compact('unit'));
     }
 
@@ -91,5 +92,15 @@ class UnitController extends Controller
 
         return redirect()->route('units.index')
             ->with('success', 'Unit deleted successfully.');
+    }
+
+    /**
+     * Get the room count for a specified unit.
+     */
+    public function getRoomCount(Unit $unit)
+    {
+        $this->authorize('view', $unit); // Ensure authorization
+        $unit->loadCount('rooms');
+        return response()->json(['room_count' => $unit->rooms_count]);
     }
 }

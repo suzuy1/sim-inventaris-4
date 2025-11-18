@@ -54,6 +54,7 @@ Route::middleware("auth")->group(function () {
     Route::resource("stok", StokHabisPakaiController::class);
     Route::resource("users", UserController::class);
     Route::resource("units", UnitController::class);
+    Route::get('/units/{unit}/room-count', [UnitController::class, 'getRoomCount'])->name('units.room-count');
     Route::resource("transactions", TransactionController::class)->except(["edit","update"]);
     Route::resource("requests", RequestController::class);
     Route::resource("sumber_danas", SumberDanaController::class);

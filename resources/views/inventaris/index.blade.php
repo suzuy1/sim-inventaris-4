@@ -358,6 +358,20 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200/50">
                 <thead class="bg-gray-50/80">
+                    @if($isConsumable)
+                    <tr>
+                        <th scope="col" class="py-4 pl-6 pr-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Inventaris</th>
+                        <th scope="col" class="px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Satuan</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tgl Kadaluarsa</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tgl Pengecekan</th>
+                        <th scope="col" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Keterangan</th>
+                        <th scope="col" class="relative py-4 pl-3 pr-6">
+                            <span class="sr-only">Aksi</span>
+                        </th>
+                    </tr>
+                    @else
                     <tr>
                         <th scope="col" rowspan="2" class="py-4 pl-6 pr-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No</th>
                         <th scope="col" rowspan="2" class="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Inventaris</th>
@@ -387,6 +401,7 @@
                             </span>
                         </th>
                     </tr>
+                    @endif
                 </thead>
                 <tbody class="divide-y divide-gray-200/30 bg-white/50">
                     @forelse ($inventaris as $item)
@@ -408,6 +423,22 @@
                                 </div>
                             </div>
                         </td>
+                        @if($isConsumable)
+                        <td class="whitespace-nowrap px-4 py-4 text-sm text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">
+                                {{ $item->stock }}
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                            {{ $item->satuan ?: '-' }}
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                            {{ $item->tgl_kadaluarsa ? \Carbon\Carbon::parse($item->tgl_kadaluarsa)->format('d M Y') : '-' }}
+                        </td>
+                        <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-600">
+                            {{ $item->tgl_pengecekan ? \Carbon\Carbon::parse($item->tgl_pengecekan)->format('d M Y') : '-' }}
+                        </td>
+                        @else
                         <td class="whitespace-nowrap px-4 py-4 text-sm text-center">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200 shadow-sm">
                                 {{ $item->total_baik }}
@@ -423,6 +454,7 @@
                                 {{ $item->total_rusak_berat }}
                             </span>
                         </td>
+                        @endif
                         <td class="px-4 py-4 text-sm text-gray-600 max-w-xs">
                             <div class="truncate group-hover:text-gray-500" title="{{ $item->keterangan }}">
                                 {{ $item->keterangan ?: '-' }}
@@ -472,7 +504,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-16 text-center">
+                        <td colspan="{{ $isConsumable ? '8' : '7' }}" class="px-6 py-16 text-center">
                             <div class="text-center max-w-md mx-auto">
                                 <div class="p-4 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl inline-flex mb-4">
                                     <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <p class="mt-2 text-sm text-gray-600 max-w-2xl">
-                    Informasi lengkap mengenai unit aset {{ $asetDetail->kode_inv }} dari {{ $asetDetail->inventaris->nama_barang }}.
+                    Informasi lengkap mengenai unit aset **{{ $asetDetail->kode_inv }}** dari **{{ $asetDetail->inventaris->nama_barang }}**.
                 </p>
                 <div class="mt-3">
                     <a href="{{ route('inventaris.show_grouped', $asetDetail->inventaris) }}" 
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-6">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-6 mt-8">
         <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
@@ -76,9 +76,17 @@
             <x-detail-row label="Sumber Dana" :value="$asetDetail->sumberDana->nama_sumber_dana ?? '-'" />
             <x-detail-row label="Tanggal Pembelian" :value="$asetDetail->tgl_pembelian ? \Carbon\Carbon::parse($asetDetail->tgl_pembelian)->format('d/m/Y') : '-'" />
             <x-detail-row label="Harga Beli" :value="$asetDetail->harga_beli ? 'Rp ' . number_format($asetDetail->harga_beli, 0, ',', '.') : '-'" />
-            <x-detail-row label="Keterangan" :value="$asetDetail->keterangan ?? '-'" />
+            
+            {{-- START: Tambahan Baris Tanggal Perbaikan dan Pengecekan --}}
             <x-detail-row label="Tanggal Perbaikan" :value="$asetDetail->tgl_perbaikan ? \Carbon\Carbon::parse($asetDetail->tgl_perbaikan)->format('d/m/Y') : '-'" />
             <x-detail-row label="Tanggal Pengecekan" :value="$asetDetail->tgl_pengecekan ? \Carbon\Carbon::parse($asetDetail->tgl_pengecekan)->format('d/m/Y') : '-'" />
+            {{-- END: Tambahan Baris Tanggal Perbaikan dan Pengecekan --}}
+
+            {{-- Pindahkan Keterangan ke baris terakhir agar menempati satu baris penuh jika layout custom --}}
+            <div class="md:col-span-2">
+                 <x-detail-row label="Keterangan" :value="$asetDetail->keterangan ?? '-'" />
+            </div>
+           
         </div>
     </div>
 </div>

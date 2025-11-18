@@ -70,11 +70,61 @@
                         </div>
 
                         <div>
-                            <label for="keterangan" class="block text-sm font-semibold leading-6 text-gray-900">Keterangan</label>
+                            <label for="keterangan" class="block text-sm font-semibold leading-6 text-gray-900">Keterangan (Master Barang)</label>
                             <div class="mt-2">
                                 <textarea name="keterangan" id="keterangan" rows="3"
                                     class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                    placeholder="Tambahkan keterangan atau detail tambahan jika diperlukan.">{{ old('keterangan') }}</textarea>
+                                    placeholder="Keterangan umum untuk master barang ini.">{{ old('keterangan') }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Consumable Fields Group -->
+                        <div id="consumable-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 p-6 bg-blue-50/50 rounded-xl border border-blue-100">
+                            <div class="sm:col-span-2">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Detail Barang Habis Pakai</h3>
+                            </div>
+                            
+                            <div>
+                                <label for="stock" class="block text-sm font-semibold leading-6 text-gray-900">Stock Awal <span class="text-red-600">*</span></label>
+                                <div class="mt-2">
+                                    <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" required min="0"
+                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                        placeholder="Jumlah stock awal">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="satuan" class="block text-sm font-semibold leading-6 text-gray-900">Satuan <span class="text-red-600">*</span></label>
+                                <div class="mt-2">
+                                    <input type="text" name="satuan" id="satuan" value="{{ old('satuan') }}" required
+                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                        placeholder="Contoh: Pcs, Box, Botol">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="tgl_kadaluarsa" class="block text-sm font-semibold leading-6 text-gray-900">Tanggal Kadaluarsa</label>
+                                <div class="mt-2">
+                                    <input type="date" name="tgl_kadaluarsa" id="tgl_kadaluarsa" value="{{ old('tgl_kadaluarsa') }}"
+                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="tgl_pengecekan" class="block text-sm font-semibold leading-6 text-gray-900">Tanggal Pengecekan Terakhir</label>
+                                <div class="mt-2">
+                                    <input type="date" name="tgl_pengecekan" id="tgl_pengecekan" value="{{ old('tgl_pengecekan') }}"
+                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="stok_keterangan" class="block text-sm font-semibold leading-6 text-gray-900">Keterangan (Stok Habis Pakai)</label>
+                                <div class="mt-2">
+                                    <textarea name="stok_keterangan" id="stok_keterangan" rows="3"
+                                        class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                                        placeholder="Keterangan spesifik untuk stok habis pakai ini.">{{ old('stok_keterangan') }}</textarea>
+                                </div>
                             </div>
                         </div>
 
@@ -96,3 +146,40 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const kategoriSelect = document.getElementById('kategori');
+        const consumableFields = document.getElementById('consumable-fields');
+        const stockInput = document.getElementById('stock');
+        const satuanInput = document.getElementById('satuan');
+
+        const consumableCategories = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+
+        function toggleConsumableFields() {
+            const selectedKategori = kategoriSelect.value;
+            if (consumableCategories.includes(selectedKategori)) {
+                consumableFields.classList.remove('hidden');
+                stockInput.setAttribute('required', 'required');
+                satuanInput.setAttribute('required', 'required');
+            } else {
+                consumableFields.classList.add('hidden');
+                stockInput.removeAttribute('required');
+                satuanInput.removeAttribute('required');
+            }
+        }
+
+        // Initial check on page load
+        toggleConsumableFields();
+
+        // Listen for changes
+        kategoriSelect.addEventListener('change', toggleConsumableFields);
+    });
+</script>
+@endpush

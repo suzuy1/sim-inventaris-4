@@ -59,7 +59,7 @@
                             id="nama_unit" 
                             value="{{ old('nama_unit') }}"
                             class="pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-200 ease-in-out py-3 px-4 border @error('nama_unit') border-red-300 bg-red-50 @enderror"
-                            placeholder="Masukkan nama unit (contoh: HRD, IT, Marketing)"
+                            placeholder="Masukkan nama Fakultas"
                             required
                         >
                     </div>

@@ -16,6 +16,10 @@
             Mengedit unit: <span class="font-semibold">{{ $asetDetail->kode_inv }}</span> 
             (Master: <span class="font-semibold">{{ $asetDetail->inventaris->nama_barang }}</span>)
         </p>
+        {{-- TAMPILKAN KODE UNIT SEBAGAI TEXT BIASA --}}
+        <p class="mt-1 text-base font-mono text-gray-700 bg-gray-100 inline-block px-3 py-1 rounded-md">
+            Kode Unit (Tidak Dapat Diubah): **{{ $asetDetail->kode_inv }}**
+        </p>
     </div>
 
     <div class="max-w-4xl mx-auto">
@@ -39,15 +43,12 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
+                        {{-- **KODE UNIT DIHILANGKAN DARI INPUT** --}}
                         <div class="md:col-span-2">
-                            <label for="kode_inv" class="block text-sm font-semibold leading-6 text-gray-900">Kode Unit <span class="text-red-600">*</span></label>
-                            <div class="mt-2">
-                                <input type="text" name="kode_inv" id="kode_inv" 
-                                       value="{{ old('kode_inv', $asetDetail->kode_inv) }}" required
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-                                    placeholder="Contoh: KRS-FAK-001">
-                            </div>
-                            <p class="mt-2 text-xs text-gray-500">Kode unik untuk unit aset ini.</p>
+                             {{-- Tetap kirim kode_inv untuk validasi unik di Controller --}}
+                            <input type="hidden" name="kode_inv" value="{{ $asetDetail->kode_inv }}">
+                            {{-- Tetap kirim sumber_dana_id --}}
+                            <input type="hidden" name="sumber_dana_id" value="{{ $asetDetail->sumber_dana_id }}">
                         </div>
 
                         <div>
@@ -62,24 +63,22 @@
                             </div>
                         </div>
 
+                        {{-- **SUMBER DANA DIHILANGKAN DARI INPUT** --}}
                         <div>
-                            <label for="sumber_dana_id" class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana</label>
-                            <div class="mt-2">
-                                <select name="sumber_dana_id" id="sumber_dana_id"
-                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
-                                    <option value="">-- Pilih Sumber Dana --</option>
-                                    @foreach($sumberDanas as $sumberDana)
-                                        <option value="{{ $sumberDana->id }}" @if(old('sumber_dana_id', $asetDetail->sumber_dana_id) == $sumberDana->id) selected @endif>{{ $sumberDana->nama_sumber_dana }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                             <label class="block text-sm font-semibold leading-6 text-gray-900">Sumber Dana</label>
+                             <div class="mt-2">
+                                <p class="bg-gray-50/50 py-3 px-4 rounded-lg text-gray-700 border border-gray-200 text-sm">
+                                    {{ $asetDetail->sumberDana->nama_sumber_dana ?? 'N/A' }} 
+                                </p>
+                             </div>
+                             <p class="mt-2 text-xs text-gray-500">Sumber dana hanya dapat diisi saat pembuatan unit.</p>
                         </div>
 
                         <div>
                             <label for="tgl_pembelian" class="block text-sm font-semibold leading-6 text-gray-900">Tanggal Pembelian</label>
                             <div class="mt-2">
                                 <input type="date" name="tgl_pembelian" id="tgl_pembelian" 
-                                       value="{{ old('tgl_pembelian', $asetDetail->tgl_pembelian) }}"
+                                        value="{{ old('tgl_pembelian', $asetDetail->tgl_pembelian) }}"
                                     class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
                             </div>
                         </div>
@@ -89,7 +88,7 @@
                             <div class="mt-2 relative">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">Rp</div>
                                 <input type="number" name="harga_beli" id="harga_beli" 
-                                       value="{{ old('harga_beli', $asetDetail->harga_beli) }}"
+                                        value="{{ old('harga_beli', $asetDetail->harga_beli) }}"
                                     class="block w-full rounded-lg border-0 bg-white/50 py-3 pl-10 pr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                                     placeholder="500000">
                             </div>
@@ -112,11 +111,33 @@
                             <label for="tipe_barang" class="block text-sm font-semibold leading-6 text-gray-900">Tipe Barang</label>
                             <div class="mt-2">
                                 <input type="text" name="tipe_barang" id="tipe_barang"
-                                       value="{{ old('tipe_barang', $asetDetail->tipe_barang) }}"
+                                        value="{{ old('tipe_barang', $asetDetail->tipe_barang) }}"
                                     class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                                     placeholder="Contoh: Laptop, Meja, Kursi">
                             </div>
                             <p class="mt-2 text-xs text-gray-500">Jenis spesifik dari barang ini (misal: Laptop Gaming, Meja Kayu).</p>
+                        </div>
+                        
+                        {{-- Tanggal Perbaikan --}}
+                        <div>
+                            <label for="tgl_perbaikan" class="block text-sm font-semibold leading-6 text-gray-900">Tanggal Perbaikan Terakhir</label>
+                            <div class="mt-2">
+                                <input type="date" name="tgl_perbaikan" id="tgl_perbaikan"
+                                        value="{{ old('tgl_perbaikan', $asetDetail->tgl_perbaikan) }}" 
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Opsional: Tanggal unit ini terakhir diperbaiki.</p>
+                        </div>
+
+                        {{-- Tanggal Pengecekan --}}
+                        <div>
+                            <label for="tgl_pengecekan" class="block text-sm font-semibold leading-6 text-gray-900">Tanggal Pengecekan Terakhir</label>
+                            <div class="mt-2">
+                                <input type="date" name="tgl_pengecekan" id="tgl_pengecekan"
+                                        value="{{ old('tgl_pengecekan', $asetDetail->tgl_pengecekan) }}"
+                                    class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">Opsional: Tanggal unit ini terakhir dicek/diverifikasi.</p>
                         </div>
 
                         <div>
@@ -141,7 +162,7 @@
                             </div>
                         </div>
                     </div>
-                </div> <!-- Closing tag for <div class="p-6 lg:p-8"> -->
+                </div> 
 
                 <div class="bg-gray-50/80 backdrop-blur-sm px-6 py-4 flex items-center justify-end gap-3">
                     <a href="{{ route('inventaris.show_grouped', $asetDetail->inventaris) }}" 

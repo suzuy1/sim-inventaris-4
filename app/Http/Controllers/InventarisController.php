@@ -26,96 +26,138 @@ class InventarisController extends Controller
  * Display a listing of the resource.
  * LOGIKA DIUBAH TOTAL: Menampilkan master inventaris + count kondisi dari aset_details
  */
-public function index(Request $request)
-{
-    $this->authorize('viewAny', Inventaris::class);
+    public function index(Request $request)
+    {
+        $this->authorize('viewAny', Inventaris::class);
 
-    $query = Inventaris::query()
-        ->withCount([
-            'asetDetails', // Menghitung total unit
-            'asetDetails as total_baik' => function ($q) {
-                $q->where('kondisi', 'Baik');
-            },
-            'asetDetails as total_rusak_ringan' => function ($q) {
-                $q->where('kondisi', 'Rusak Ringan');
-            },
-            'asetDetails as total_rusak_berat' => function ($q) {
-                $q->where('kondisi', 'Rusak Berat');
-            },
-        ]);
+        $kategori = $request->input('kategori');
+        $search = $request->input('search');
 
-    // [REVISI] Tambahkan filter berdasarkan kategori dari request
-    $kategori = $request->input('kategori');
-    if ($kategori) {
-        $query->where('kategori', $kategori);
+        $habisPakaiKategori = [
+            'Barang Habis Pakai Medis',
+            'Barang Habis Pakai Kebersihan',
+            'Barang Habis Pakai ATK',
+            'Obat'
+        ];
+
+        $isConsumable = in_array($kategori, $habisPakaiKategori);
+
+        if ($isConsumable) {
+            $query = StokHabisPakai::query()
+                ->select(
+                    'stok_habis_pakais.id',
+                    'stok_habis_pakais.inventaris_id',
+                    'inventaris.nama_barang',
+                    'inventaris.kategori',
+                    DB::raw('(jumlah_masuk - jumlah_keluar) as stock'),
+                    'stok_habis_pakais.satuan',
+                    'stok_habis_pakais.tgl_kadaluarsa',
+                    'stok_habis_pakais.tgl_pengecekan',
+                    'stok_habis_pakais.keterangan'
+                )
+                ->join('inventaris', 'stok_habis_pakais.inventaris_id', '=', 'inventaris.id')
+                ->where('inventaris.kategori', $kategori);
+
+            if ($search) {
+                $query->where('inventaris.nama_barang', 'like', '%' . $search . '%');
+            }
+
+            $inventaris = $query->paginate(10);
+
+            // For consumable items, percentageData might not be directly applicable or needs different logic.
+            // For now, we'll set them to 0 or a neutral value.
+            $percentageData = [
+                'barang_baik' => 0,
+                'rusak_ringan' => 0,
+                'rusak_berat' => 0,
+                'jenis_barang' => 0,
+            ];
+
+        } else {
+            $query = Inventaris::query()
+                ->withCount([
+                    'asetDetails', // Menghitung total unit
+                    'asetDetails as total_baik' => function ($q) {
+                        $q->where('kondisi', 'Baik');
+                    },
+                    'asetDetails as total_rusak_ringan' => function ($q) {
+                        $q->where('kondisi', 'Rusak Ringan');
+                    },
+                    'asetDetails as total_rusak_berat' => function ($q) {
+                        $q->where('kondisi', 'Rusak Berat');
+                    },
+                ]);
+
+            if ($kategori) {
+                $query->where('kategori', $kategori);
+            }
+
+            if ($search) {
+                $query->where('nama_barang', 'like', '%' . $search . '%');
+            }
+
+            $inventaris = $query->paginate(10);
+
+            // ===================================================================
+            // [BARU] Hitung data untuk persentase real-time (bulan ini vs bulan lalu)
+            // ===================================================================
+            $currentMonth = now()->month;
+            $currentYear = now()->year;
+            $lastMonth = now()->subMonth()->month;
+            $lastMonthYear = now()->subMonth()->year;
+
+            // Query dasar untuk bulan lalu
+            $lastMonthQuery = Inventaris::query();
+            
+            // Filter kategori jika ada
+            if ($kategori) {
+                $lastMonthQuery->where('kategori', $kategori);
+            }
+
+            // Hitung data bulan lalu berdasarkan tanggal pembuatan aset_details
+            $lastMonthStats = $lastMonthQuery
+                ->withCount([
+                    'asetDetails as last_month_total_baik' => function ($q) use ($lastMonth, $lastMonthYear) {
+                        $q->where('kondisi', 'Baik')
+                          ->whereMonth('created_at', '<=', $lastMonth)
+                          ->whereYear('created_at', '<=', $lastMonthYear);
+                    },
+                    'asetDetails as last_month_total_rusak_ringan' => function ($q) use ($lastMonth, $lastMonthYear) {
+                        $q->where('kondisi', 'Rusak Ringan')
+                          ->whereMonth('created_at', '<=', $lastMonth)
+                          ->whereYear('created_at', '<=', $lastMonthYear);
+                    },
+                    'asetDetails as last_month_total_rusak_berat' => function ($q) use ($lastMonth, $lastMonthYear) {
+                        $q->where('kondisi', 'Rusak Berat')
+                          ->whereMonth('created_at', '<=', $lastMonth)
+                          ->whereYear('created_at', '<=', $lastMonthYear);
+                    },
+                ])
+                ->get();
+
+            // Aggregasi data bulan lalu
+            $lastMonthBarangBaik = $lastMonthStats->sum('last_month_total_baik') ?: 1;
+            $lastMonthRusakRingan = $lastMonthStats->sum('last_month_total_rusak_ringan') ?: 1;
+            $lastMonthRusakBerat = $lastMonthStats->sum('last_month_total_rusak_berat') ?: 1;
+            $lastMonthJenisBarang = $lastMonthStats->count() ?: 1;
+
+            // Data bulan ini (dari $inventaris yang sudah ada)
+            $currentBarangBaik = $inventaris->sum('total_baik');
+            $currentRusakRingan = $inventaris->sum('total_rusak_ringan');
+            $currentRusakBerat = $inventaris->sum('total_rusak_berat');
+            $currentJenisBarang = $inventaris->count();
+
+            // Hitung persentase
+            $percentageData = [
+                'barang_baik' => $this->calculatePercentage($currentBarangBaik, $lastMonthBarangBaik),
+                'rusak_ringan' => $this->calculatePercentage($currentRusakRingan, $lastMonthRusakRingan),
+                'rusak_berat' => $this->calculatePercentage($currentRusakBerat, $lastMonthRusakBerat),
+                'jenis_barang' => $this->calculatePercentage($currentJenisBarang, $lastMonthJenisBarang),
+            ];
+        }
+
+        return view('inventaris.index', compact('inventaris', 'kategori', 'percentageData', 'isConsumable'));
     }
-
-    if ($request->has('search')) {
-        $query->where('nama_barang', 'like', '%' . $request->search . '%');
-    }
-
-    $inventaris = $query->paginate(10);
-
-    // ===================================================================
-    // [BARU] Hitung data untuk persentase real-time (bulan ini vs bulan lalu)
-    // ===================================================================
-    $currentMonth = now()->month;
-    $currentYear = now()->year;
-    $lastMonth = now()->subMonth()->month;
-    $lastMonthYear = now()->subMonth()->year;
-
-    // Query dasar untuk bulan lalu
-    $lastMonthQuery = Inventaris::query();
-    
-    // Filter kategori jika ada
-    if ($kategori) {
-        $lastMonthQuery->where('kategori', $kategori);
-    }
-
-    // Hitung data bulan lalu berdasarkan tanggal pembuatan aset_details
-    $lastMonthStats = $lastMonthQuery
-        ->withCount([
-            'asetDetails as last_month_total_baik' => function ($q) use ($lastMonth, $lastMonthYear) {
-                $q->where('kondisi', 'Baik')
-                  ->whereMonth('created_at', '<=', $lastMonth)
-                  ->whereYear('created_at', '<=', $lastMonthYear);
-            },
-            'asetDetails as last_month_total_rusak_ringan' => function ($q) use ($lastMonth, $lastMonthYear) {
-                $q->where('kondisi', 'Rusak Ringan')
-                  ->whereMonth('created_at', '<=', $lastMonth)
-                  ->whereYear('created_at', '<=', $lastMonthYear);
-            },
-            'asetDetails as last_month_total_rusak_berat' => function ($q) use ($lastMonth, $lastMonthYear) {
-                $q->where('kondisi', 'Rusak Berat')
-                  ->whereMonth('created_at', '<=', $lastMonth)
-                  ->whereYear('created_at', '<=', $lastMonthYear);
-            },
-        ])
-        ->get();
-
-    // Aggregasi data bulan lalu
-    $lastMonthBarangBaik = $lastMonthStats->sum('last_month_total_baik') ?: 1;
-    $lastMonthRusakRingan = $lastMonthStats->sum('last_month_total_rusak_ringan') ?: 1;
-    $lastMonthRusakBerat = $lastMonthStats->sum('last_month_total_rusak_berat') ?: 1;
-    $lastMonthJenisBarang = $lastMonthStats->count() ?: 1;
-
-    // Data bulan ini (dari $inventaris yang sudah ada)
-    $currentBarangBaik = $inventaris->sum('total_baik');
-    $currentRusakRingan = $inventaris->sum('total_rusak_ringan');
-    $currentRusakBerat = $inventaris->sum('total_rusak_berat');
-    $currentJenisBarang = $inventaris->count();
-
-    // Hitung persentase
-    $percentageData = [
-        'barang_baik' => $this->calculatePercentage($currentBarangBaik, $lastMonthBarangBaik),
-        'rusak_ringan' => $this->calculatePercentage($currentRusakRingan, $lastMonthRusakRingan),
-        'rusak_berat' => $this->calculatePercentage($currentRusakBerat, $lastMonthRusakBerat),
-        'jenis_barang' => $this->calculatePercentage($currentJenisBarang, $lastMonthJenisBarang),
-    ];
-
-    // [REVISI] Kirim $kategori dan $percentageData ke view
-    return view('inventaris.index', compact('inventaris', 'kategori', 'percentageData'));
-}
 
 /**
  * [BARU] Helper function untuk menghitung persentase perubahan
@@ -159,8 +201,21 @@ private function calculatePercentage($current, $previous)
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
                 'kategori' => $validatedData['kategori'],
-                'keterangan' => $validatedData['keterangan'] ?? null, // Add keterangan
+                'keterangan' => $validatedData['keterangan'] ?? null, // Keterangan for Inventaris master
             ]);
+
+            // 2. Jika kategori adalah barang habis pakai, buat entri di stok_habis_pakais
+            if (in_array($validatedData['kategori'], $habisPakaiKategori)) {
+                StokHabisPakai::create([
+                    'inventaris_id' => $inventaris->id,
+                    'jumlah_masuk' => $validatedData['stock'] ?? 0, // Use 'stock' from form
+                    'jumlah_keluar' => 0, // Initial keluar is 0
+                    'satuan' => $validatedData['satuan'] ?? null,
+                    'tgl_kadaluarsa' => $validatedData['tgl_kadaluarsa'] ?? null,
+                    'tgl_pengecekan' => $validatedData['tgl_pengecekan'] ?? null,
+                    'keterangan' => $validatedData['stok_keterangan'] ?? null, // Keterangan for StokHabisPakai
+                ]);
+            }
 
             DB::commit();
 
