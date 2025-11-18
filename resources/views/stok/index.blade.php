@@ -12,7 +12,7 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('stok.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-200">
+                    <a href="{{ route('stok.create', ['kategori' => $kategori]) }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
@@ -144,7 +144,7 @@
                                         </svg>
                                         <p class="text-lg font-medium text-gray-900">Tidak ada data stok barang habis pakai</p>
                                         <p class="text-gray-500 mt-1">Mulai dengan menambahkan stok baru</p>
-                                        <a href="{{ route('stok.create') }}" class="mt-4 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                                        <a href="{{ route('stok.create', ['kategori' => $kategori]) }}" class="mt-4 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
                                             Tambah Stok Baru
                                         </a>
                                     </div>

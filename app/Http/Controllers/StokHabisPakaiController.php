@@ -12,7 +12,7 @@ class StokHabisPakaiController extends Controller
     protected $bhpCategories = [
         'Barang Habis Pakai Medis',
         'Barang Habis Pakai Kebersihan',
-        'Barang Habis ATK',
+        'Barang Habis Pakai ATK',
         'Obat',
     ];
 
@@ -64,14 +64,14 @@ class StokHabisPakaiController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Ambil data inventaris yang relevan (misal, yang kategorinya ATK)
-        // $inventarisItems = Inventaris::where('kategori', 'ATK')->get(); 
-        // return view('stok.create', compact('inventarisItems'));
+        // [PERBAIKAN] Ambil daftar kategori BHP untuk dropdown di form
+        $bhpCategories = $this->bhpCategories;
+        $selectedKategori = $request->query('kategori'); // Ambil kategori dari query string
         
-        // Atau jika Anda ingin buat barang baru sekaligus stoknya
-        return view('stok.create');
+        // Kirim list kategori dan kategori yang dipilih ke view
+        return view('stok.create', compact('bhpCategories', 'selectedKategori'));
     }
 
     /**
@@ -85,45 +85,35 @@ class StokHabisPakaiController extends Controller
             'nama_barang' => 'required|string|max:255', // Jika input baru
             'kode_inventaris' => 'required|string|unique:inventaris,kode_inventaris', // Jika input baru
             'satuan' => 'required|string|max:50',
-            'jumlah' => 'required|integer|min:0',
+            'jumlah' => 'required|integer|min:1', // Harus ada stok awal
             'tgl_kadaluarsa' => 'nullable|date',
             'tgl_pengecekan' => 'nullable|date',
             'keterangan' => 'nullable|string',
         ]);
-
-        // SANGAT DIREKOMENDASIKAN pakai DB Transaction
-        // karena Anda menyentuh 2 tabel (inventaris & stok)
+        
+        // ... (Logika try-catch)
         try {
             DB::beginTransaction();
 
             // 1. Buat data di tabel 'inventaris' dulu
-            // Perhatikan: Model Inventaris Anda akan auto-generate kode unik jika 'kode_inventaris' tidak diisi
-            // Tapi untuk BHP, kodenya mungkin diinput manual
             $itemInventaris = Inventaris::create([
                 'nama_barang' => $request->nama_barang,
-                'kode_inventaris' => $request->kode_inventaris, // Pastikan ini unik
-                'kategori' => 'Barang Habis Pakai', // atau 'ATK' atau sesuai kebutuhan
-                'pemilik' => $request->pemilik ?? 'UBBG', // Sesuaikan
-                'sumber_dana' => $request->sumber_dana ?? 'UBBG', // Sesuaikan
-                'tahun_beli' => $request->tahun_beli ?? date('Y'),
-                'kondisi_baik' => 0, // BHP tidak pakai kondisi ini
-                'kondisi_rusak_ringan' => 0,
-                'kondisi_rusak_berat' => 0,
-                // 'unit_id' => ... (Opsional)
-                // 'room_id' => ... (Opsional, misal gudang ATK)
+                'kode_inventaris' => $request->kode_inventaris,
+                'kategori' => $request->kategori, // <-- Ambil dari input form
+                'pemilik' => $request->pemilik ?? 'UBBG', 
+                // ... (field inventaris lainnya)
             ]);
 
             // 2. Buat data di tabel 'stok_habis_pakais'
             $stok = new StokHabisPakai();
-            $stok->inventaris_id = $itemInventaris->id; // Hubungkan ke inventaris
-            $stok->jumlah_masuk = $request->jumlah; // Menggunakan jumlah_masuk
+            // ...
+            $stok->jumlah_masuk = $request->jumlah;
             $stok->satuan = $request->satuan;
             $stok->tgl_kadaluarsa = $request->tgl_kadaluarsa;
             $stok->tgl_pengecekan = $request->tgl_pengecekan;
             $stok->keterangan = $request->keterangan;
-            $stok->tanggal = now(); // Tambahkan tanggal transaksi
             $stok->save();
-
+            
             DB::commit(); // Simpan perubahan jika sukses
 
             return redirect()->route('stok.index')->with('success', 'Stok barang habis pakai berhasil ditambahkan.');

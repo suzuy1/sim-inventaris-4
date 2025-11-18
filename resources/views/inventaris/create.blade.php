@@ -87,7 +87,7 @@
                             <div>
                                 <label for="stock" class="block text-sm font-semibold leading-6 text-gray-900">Stock Awal <span class="text-red-600">*</span></label>
                                 <div class="mt-2">
-                                    <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" required min="0"
+                                    <input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" min="0"
                                         class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                                         placeholder="Jumlah stock awal">
                                 </div>
@@ -96,7 +96,7 @@
                             <div>
                                 <label for="satuan" class="block text-sm font-semibold leading-6 text-gray-900">Satuan <span class="text-red-600">*</span></label>
                                 <div class="mt-2">
-                                    <input type="text" name="satuan" id="satuan" value="{{ old('satuan') }}" required
+                                    <input type="text" name="satuan" id="satuan" value="{{ old('satuan') }}"
                                         class="block w-full rounded-lg border-0 bg-white/50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                                         placeholder="Contoh: Pcs, Box, Botol">
                                 </div>
@@ -164,14 +164,25 @@
 
         function toggleConsumableFields() {
             const selectedKategori = kategoriSelect.value;
+            console.log('Selected Kategori:', selectedKategori);
             if (consumableCategories.includes(selectedKategori)) {
                 consumableFields.classList.remove('hidden');
+                stockInput.removeAttribute('disabled');
+                satuanInput.removeAttribute('disabled');
                 stockInput.setAttribute('required', 'required');
                 satuanInput.setAttribute('required', 'required');
+                stockInput.name = 'stock'; // Ensure name is present
+                satuanInput.name = 'satuan'; // Ensure name is present
+                console.log('Consumable fields shown. Stock required:', stockInput.required, 'Satuan required:', satuanInput.required, 'Stock name:', stockInput.name, 'Satuan name:', satuanInput.name);
             } else {
                 consumableFields.classList.add('hidden');
+                stockInput.setAttribute('disabled', 'disabled');
+                satuanInput.setAttribute('disabled', 'disabled');
                 stockInput.removeAttribute('required');
                 satuanInput.removeAttribute('required');
+                stockInput.name = ''; // Remove name to prevent submission/validation
+                satuanInput.name = ''; // Remove name to prevent submission/validation
+                console.log('Consumable fields hidden. Stock required:', stockInput.required, 'Satuan required:', satuanInput.required, 'Stock name:', stockInput.name, 'Satuan name:', satuanInput.name);
             }
         }
 
