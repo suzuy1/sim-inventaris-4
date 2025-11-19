@@ -17,7 +17,7 @@
     <header class="bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200 sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('rooms.show', $room->id) }}" 
+                <a href="{{ route('rooms.show', $room->id_room) }}" 
                    class="inline-flex items-center text-gray-600 hover:text-indigo-600 transition">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span class="font-medium">Kembali</span>
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-mono font-bold">
-                #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}
+                #{{ str_pad($room->id_room, 6, '0', STR_PAD_LEFT) }}
             </div>
         </div>
     </header>
@@ -59,7 +59,7 @@
 
                 <!-- Form Body -->
                 <div class="p-8 lg:p-10">
-                    <form action="{{ route('rooms.update', $room->id) }}" method="POST" class="space-y-8">
+                    <form action="{{ route('rooms.update', $room->id_room) }}" method="POST" class="space-y-8">
                         @csrf
                         @method('PUT')
 
@@ -175,7 +175,7 @@
                                 <i class="fas fa-save mr-3"></i>
                                 Simpan Perubahan
                             </button>
-                            <a href="{{ route('rooms.show', $room->id) }}" 
+                            <a href="{{ route('rooms.show', $room->id_room) }}" 
                                class="flex-1 sm:flex-initial inline-flex justify-center items-center px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition">
                                 <i class="fas fa-times mr-3"></i>
                                 Batal
@@ -207,7 +207,7 @@
     <!-- Footer -->
     <footer class="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 mt-auto">
         <div class="max-w-7xl mx-auto px-6 text-center text-xs text-gray-500">
-            Form Edit • ID: <span class="font-mono">#{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}</span> • 
+            Form Edit • ID: <span class="font-mono">#{{ str_pad($room->id_room, 6, '0', STR_PAD_LEFT) }}</span> • 
             {{ now()->format('d M Y, H:i') }} WIB
         </div>
     </footer>

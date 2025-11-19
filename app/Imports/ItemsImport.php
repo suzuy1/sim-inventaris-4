@@ -27,7 +27,7 @@ class ItemsImport implements ToModel, WithHeadingRow
             'quantity' => $row['quantity'],
             'unit' => $row['unit'],
             'acquisition_date' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['acquisition_date']),
-            'room_id' => $room ? $room->id : null,
+            'room_id' => $room ? $room->id_room : null,
             'user_id' => $user ? $user->id : null,
         ]);
     }

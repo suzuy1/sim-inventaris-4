@@ -203,7 +203,7 @@
                                             class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 text-gray-900 transition-all duration-200">
                                     <option value="">Pilih Ruangan</option>
                                     @foreach($rooms as $room)
-                                        <option value="{{ $room->id }}" @if(old('room_id') == $room->id) selected @endif>
+                                        <option value="{{ $room->id_room }}" @if(old('room_id') == $room->id_room) selected @endif>
                                             {{ $room->nama_ruangan }}
                                         </option>
                                     @endforeach

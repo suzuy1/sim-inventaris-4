@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('kondisi', ['Baik', 'Rusak Ringan', 'Rusak Berat'])->default('Baik');
             
             // Asumsi 'Ruangan' = room_id dari tabel rooms
-            $table->foreignId('room_id')->nullable()->constrained('rooms')->onDelete('set null');
+            $table->foreignId('room_id')->nullable()->constrained('rooms', 'id_room')->onDelete('set null');
             
             // Asumsi 'Penanggung Jawab' = user_id dari tabel users
             $table->foreignId('penanggung_jawab_id')->nullable()->constrained('users')->onDelete('set null');

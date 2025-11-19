@@ -406,7 +406,7 @@ private function calculatePercentage($current, $previous)
             'harga_beli' => 'nullable|numeric|min:0',
             'sumber_dana_id' => 'required|exists:sumber_danas,id',
             'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
-            'room_id' => 'nullable|exists:rooms,id',
+            'room_id' => 'nullable|exists:rooms,id_room',
             'penanggung_jawab_id' => 'nullable|exists:users,id',
             'keterangan' => 'nullable|string',
             'tgl_perbaikan' => 'nullable|date',
@@ -504,7 +504,7 @@ private function calculatePercentage($current, $previous)
             'harga_beli' => 'nullable|numeric|min:0',
             'sumber_dana_id' => 'nullable|exists:sumber_danas,id', // Change to foreign key
             'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat',
-            'room_id' => 'nullable|exists:rooms,id',
+            'room_id' => 'nullable|exists:rooms,id_room',
             'penanggung_jawab_id' => 'nullable|exists:users,id',
             'keterangan' => 'nullable|string',
             'tgl_perbaikan' => 'nullable|date',

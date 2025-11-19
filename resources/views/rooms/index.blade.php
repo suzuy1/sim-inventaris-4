@@ -228,7 +228,7 @@
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2 opacity-70 group-hover:opacity-100 transition-all duration-300">
-                                <a href="{{ route('rooms.show', $room->id) }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 group/action" title="Lihat Detail">
+                                <a href="{{ route('rooms.show', $room->id_room) }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200 group/action" title="Lihat Detail">
                                     <div class="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg border border-blue-200 transition-all duration-200">
                                         <svg class="w-3.5 h-3.5 group-hover/action:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -237,7 +237,7 @@
                                         <span class="text-xs font-bold">Detail</span>
                                     </div>
                                 </a>
-                                <a href="{{ route('rooms.edit', $room->id) }}" class="text-amber-600 hover:text-amber-800 transition-colors duration-200 group/action" title="Edit">
+                                <a href="{{ route('rooms.edit', $room->id_room) }}" class="text-amber-600 hover:text-amber-800 transition-colors duration-200 group/action" title="Edit">
                                     <div class="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-lg border border-amber-200 transition-all duration-200">
                                         <svg class="w-3.5 h-3.5 group-hover/action:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -245,7 +245,7 @@
                                         <span class="text-xs font-bold">Edit</span>
                                     </div>
                                 </a>
-                                <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" class="inline">
+                                <form action="{{ route('rooms.destroy', $room->id_room) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-800 transition-colors duration-200 group/action" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus ruangan ini? Tindakan ini tidak dapat dibatalkan.')">

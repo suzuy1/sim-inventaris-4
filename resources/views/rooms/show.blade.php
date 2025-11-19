@@ -19,13 +19,13 @@
                 </div>
                 
                 <div class="flex space-x-3">
-                    <a href="{{ route('rooms.edit', $room->id) }}"
+                    <a href="{{ route('rooms.edit', $room->id_room) }}"
                        class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:bg-yellow-600 active:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                         <i class="fas fa-edit mr-2"></i>
                         Edit
                     </a>
                     
-                    <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" class="inline">
+                    <form action="{{ route('rooms.destroy', $room->id_room) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
@@ -158,7 +158,7 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-500">ID Ruangan</p>
                                                 <p class="text-base font-semibold text-gray-900">
-                                                    #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}
+                                                    #{{ str_pad($room->id_room, 6, '0', STR_PAD_LEFT) }}
                                                 </p>
                                             </div>
                                         </div>
@@ -192,7 +192,7 @@
                         Tindakan Cepat
                     </h3>
                     <div class="space-y-3">
-                        <a href="{{ route('rooms.edit', $room->id) }}"
+                        <a href="{{ route('rooms.edit', $room->id_room) }}"
                            class="w-full flex items-center justify-center px-4 py-3 border border-yellow-300 rounded-lg text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition duration-150 ease-in-out font-medium">
                             <i class="fas fa-edit mr-2"></i>
                             Edit Ruangan
@@ -246,7 +246,7 @@
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-300">ID Sistem</span>
-                            <span class="font-mono">#{{ $room->id }}</span>
+                            <span class="font-mono">#{{ $room->id_room }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-300">Versi</span>
@@ -268,7 +268,7 @@
         <div class="mt-8 text-center">
             <p class="text-sm text-gray-500">
                 Halaman detail ruangan • 
-                <span class="font-mono">ID: #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}</span> • 
+                <span class="font-mono">ID: #{{ str_pad($room->id_room, 6, '0', STR_PAD_LEFT) }}</span> • 
                 {{ now()->format('d M Y, H:i') }}
             </p>
         </div>

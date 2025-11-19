@@ -56,7 +56,7 @@ return new class extends Migration
             $table->text('keterangan')->nullable();
             $table->string('lokasi')->nullable();
             $table->foreignId('unit_id')->nullable()->constrained('units');
-            $table->foreignId('room_id')->nullable()->constrained('rooms');
+            $table->foreignId('room_id')->nullable()->constrained('rooms', 'id_room');
             $table->string('kode_inventaris')->nullable()->unique();
         });
     }
