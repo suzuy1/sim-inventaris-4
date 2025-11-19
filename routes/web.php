@@ -51,7 +51,16 @@ Route::middleware("auth")->group(function () {
     ]);
     Route::resource("acquisitions", AcquisitionController::class);
     Route::resource("rooms", RoomController::class);
-    Route::resource("stok", StokHabisPakaiController::class);
+    Route::resource("stok", StokHabisPakaiController::class)->parameters([
+        'stok' => 'inventaris'
+    ]);
+
+    // StokHabisPakai Routes (Custom)
+    Route::get("/stok/print_all",[StokHabisPakaiController::class,"printAll"])->name("stok.print_all");
+    Route::get("/stok/print_single/{id}",[StokHabisPakaiController::class,"printSingle"])->name("stok.print_single");
+    Route::post("stok/import",[StokHabisPakaiController::class,"import"])->name("stok.import");
+    Route::get("stok/export",[StokHabisPakaiController::class,"export"])->name("stok.export");
+
     Route::resource("users", UserController::class);
     Route::resource("units", UnitController::class);
     Route::get('/units/{unit}/room-count', [UnitController::class, 'getRoomCount'])->name('units.room-count');

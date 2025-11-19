@@ -76,13 +76,6 @@
                                         placeholder="Contoh: Masker Medis, Pulpen Snowman">
                             </div>
 
-                            <div class="space-y-2">
-                                <label for="kode_inventaris" class="block text-sm font-semibold text-gray-900">Kode Inventaris <span class="text-red-500">*</span></label>
-                                <input type="text" name="kode_inventaris" id="kode_inventaris" value="{{ old('kode_inventaris') }}" required
-                                        class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 py-3 px-4 text-gray-900 transition-all duration-200"
-                                        placeholder="Contoh: BHP/MEDIS/001">
-                            </div>
-                            
                             <div class="space-y-2 md:col-span-2">
                                 <label for="kategori" class="block text-sm font-semibold text-gray-900">Kategori BHP <span class="text-red-500">*</span></label>
                                 <select name="kategori" id="kategori" required

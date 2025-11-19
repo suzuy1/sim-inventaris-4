@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StokHabisPakai extends Model
 {
     protected $fillable = [
-        'inventaris_id',
+        'id_inventaris', // [PERBAIKAN] Sesuaikan dengan nama kolom di database (sebelumnya inventaris_id)
         'jumlah_masuk',
         'jumlah_keluar',
         'tanggal',
@@ -20,6 +20,7 @@ class StokHabisPakai extends Model
     // Relationships
     public function inventaris()
     {
-        return $this->belongsTo(Inventaris::class);
+        // [PERBAIKAN] Tambahkan parameter kedua 'id_inventaris' karena nama kolomnya tidak standar (bukan inventaris_id)
+        return $this->belongsTo(Inventaris::class, 'id_inventaris');
     }
 }

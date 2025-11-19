@@ -43,36 +43,8 @@ class InventarisController extends Controller
         $isConsumable = in_array($kategori, $habisPakaiKategori);
 
         if ($isConsumable) {
-            $query = StokHabisPakai::query()
-                ->select(
-                    'stok_habis_pakais.id',
-                    'stok_habis_pakais.inventaris_id',
-                    'inventaris.nama_barang',
-                    'inventaris.kategori',
-                    DB::raw('(jumlah_masuk - jumlah_keluar) as stock'),
-                    'stok_habis_pakais.satuan',
-                    'stok_habis_pakais.tgl_kadaluarsa',
-                    'stok_habis_pakais.tgl_pengecekan',
-                    'stok_habis_pakais.keterangan'
-                )
-                ->join('inventaris', 'stok_habis_pakais.inventaris_id', '=', 'inventaris.id')
-                ->where('inventaris.kategori', $kategori);
-
-            if ($search) {
-                $query->where('inventaris.nama_barang', 'like', '%' . $search . '%');
-            }
-
-            $inventaris = $query->paginate(10);
-
-            // For consumable items, percentageData might not be directly applicable or needs different logic.
-            // For now, we'll set them to 0 or a neutral value.
-            $percentageData = [
-                'barang_baik' => 0,
-                'rusak_ringan' => 0,
-                'rusak_berat' => 0,
-                'jenis_barang' => 0,
-            ];
-
+            // Redirect ke halaman stok.index jika kategori adalah barang habis pakai
+            return redirect()->route('stok.index', ['kategori' => $kategori]);
         } else {
             $query = Inventaris::query()
                 ->withCount([

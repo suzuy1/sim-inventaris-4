@@ -33,11 +33,12 @@ class StokHabisPakaiController extends Controller
         // 2. Query Inventaris (Master Barang)
         $query = Inventaris::whereIn('kategori', $categoriesToFilter);
 
-        // 3. Hitung Stok Total (Stok Masuk - Stok Keluar)
-        $query->withSum('stokHabisPakai as total_masuk', 'jumlah_masuk')
-              ->withSum('stokHabisPakai as total_keluar', 'jumlah_keluar')
-              ->select('inventaris.*') // Penting untuk memilih semua kolom inventaris
-              ->addSelect(DB::raw('(COALESCE(total_masuk, 0) - COALESCE(total_keluar, 0)) as stok_saat_ini'));
+        // 3. Hitung Stok Total (Stok Masuk - Stok Keluar) menggunakan subquery
+        $query->select('inventaris.*') // Penting untuk memilih semua kolom inventaris
+              ->addSelect(DB::raw('(
+                  (SELECT COALESCE(SUM(jumlah_masuk), 0) FROM stok_habis_pakais WHERE inventaris_id = inventaris.id) -
+                  (SELECT COALESCE(SUM(jumlah_keluar), 0) FROM stok_habis_pakais WHERE inventaris_id = inventaris.id)
+              ) as stok_saat_ini'));
 
         // 4. Ambil Detail Transaksi Terakhir (untuk Satuan, Tgl Kadaluarsa, Pengecekan, Keterangan)
         // Kita menggunakan relasi stokHabisPakai yang diurutkan dan dibatasi 1
@@ -48,17 +49,16 @@ class StokHabisPakaiController extends Controller
         // 5. Pencarian
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhere('kode_inventaris', 'like', "%{$search}%");
+                $q->where('nama_barang', 'like', "%{$search}%");
             });
         }
 
-        $stokBarang = $query->orderBy('nama_barang', 'asc')->paginate(15);
+        $stokHabisPakai = $query->orderBy('nama_barang', 'asc')->paginate(15);
 
         // Kirim kategori yang tersedia ke view
         $bhpCategories = $this->bhpCategories;
 
-        return view('stok.index', compact('stokBarang', 'bhpCategories', 'kategori'));
+        return view('stok.index', compact('stokHabisPakai', 'bhpCategories', 'kategori'));
     }
 
     /**
@@ -81,9 +81,7 @@ class StokHabisPakaiController extends Controller
     {
         // Validasi request
         $request->validate([
-            // 'inventaris_id' => 'required|exists:inventaris,id', // Jika memilih barang yang ada
             'nama_barang' => 'required|string|max:255', // Jika input baru
-            'kode_inventaris' => 'required|string|unique:inventaris,kode_inventaris', // Jika input baru
             'satuan' => 'required|string|max:50',
             'jumlah' => 'required|integer|min:1', // Harus ada stok awal
             'tgl_kadaluarsa' => 'nullable|date',
@@ -98,16 +96,17 @@ class StokHabisPakaiController extends Controller
             // 1. Buat data di tabel 'inventaris' dulu
             $itemInventaris = Inventaris::create([
                 'nama_barang' => $request->nama_barang,
-                'kode_inventaris' => $request->kode_inventaris,
                 'kategori' => $request->kategori, // <-- Ambil dari input form
                 'pemilik' => $request->pemilik ?? 'UBBG', 
                 // ... (field inventaris lainnya)
             ]);
 
-            // 2. Buat data di tabel 'stok_habis_pakais'
+            // 2. Buat data di tabel 'stok_habis_pakais' (Detail Stok)
             $stok = new StokHabisPakai();
-            // ...
+            $stok->inventaris_id = $itemInventaris->id; // [PERBAIKAN PENTING] Sambungkan ke ID barang yang baru dibuat
             $stok->jumlah_masuk = $request->jumlah;
+            $stok->jumlah_keluar = 0; // Default 0
+            $stok->tanggal = now();   // [PERBAIKAN PENTING] Tanggal transaksi wajib diisi (sesuai migrasi)
             $stok->satuan = $request->satuan;
             $stok->tgl_kadaluarsa = $request->tgl_kadaluarsa;
             $stok->tgl_pengecekan = $request->tgl_pengecekan;
@@ -116,8 +115,7 @@ class StokHabisPakaiController extends Controller
             
             DB::commit(); // Simpan perubahan jika sukses
 
-            return redirect()->route('stok.index')->with('success', 'Stok barang habis pakai berhasil ditambahkan.');
-
+            return redirect()->route('inventaris.show_grouped', $itemInventaris->id)->with('success', 'Stok barang habis pakai berhasil ditambahkan.');
         } catch (\Exception $e) {
             DB::rollBack(); // Batalkan jika ada error
             // Tampilkan pesan error
@@ -146,6 +144,11 @@ class StokHabisPakaiController extends Controller
         }]);
         
         $stok = $inventaris->stokHabisPakai->first(); // Ambil transaksi stok terakhir
+        
+        // Jika tidak ada stok yang ditemukan, inisialisasi objek StokHabisPakai baru
+        if (is_null($stok)) {
+            $stok = new StokHabisPakai();
+        }
         
         // Kirim inventaris dan stok terakhir ke view
         return view('stok.edit', compact('inventaris', 'stok'));
